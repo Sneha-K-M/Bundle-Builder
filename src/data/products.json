@@ -1,0 +1,102 @@
+{
+  "cameras": [
+    {
+      "id": "wyze-cam-v4",
+      "category": "cameras",
+      "name": "Wyze Cam v4",
+      "description": "The clearest Wyze Cam ever with color night vision.",
+      "image": "/images/wyze-cam-v4.png",
+      "badge": {
+        "text": "Save 22%"
+      },
+      "variants": [
+        {
+          "id": "white",
+          "name": "White"
+        },
+        {
+          "id": "gray",
+          "name": "Gray"
+        },
+        {
+          "id": "black",
+          "name": "Black"
+        }
+      ],
+      "price": 27.98,
+      "compareAtPrice": 35.98
+    },
+    {
+      "id": "wyze-cam-pan-v3",
+      "category": "cameras",
+      "name": "Wyze Cam Pan v3",
+      "description": "360° pan and 180° tilt security camera.",
+      "image": "/images/wyze-cam-pan-v3.png",
+      "badge": {
+        "text": "Save 12%"
+      },
+      "variants": [
+        {
+          "id": "white",
+          "name": "White"
+        },
+        {
+          "id": "black",
+          "name": "Black"
+        }
+      ],
+      "price": 34.98,
+      "compareAtPrice": 39.98
+    },
+    {
+      "id": "wyze-cam-floodlight-v2",
+      "category": "cameras",
+      "name": "Wyze Cam Floodlight v2",
+      "description": "2K floodlight camera with a large wide-angle view.",
+      "image": "/images/wyze-cam-floodlight-v2.png",
+      "badge": {
+        "text": "Save 22%"
+      },
+      "variants": [
+        {
+          "id": "white",
+          "name": "White"
+        },
+        {
+          "id": "black",
+          "name": "Black"
+        }
+      ],
+      "price": 69.98,
+      "compareAtPrice": 89.98
+    },
+    {
+      "id": "wyze-duo-cam-doorbell",
+      "category": "cameras",
+      "name": "Wyze Duo Cam Doorbell",
+      "description": "Two cameras. Two views. Double the porch protection.",
+      "image": "/images/wyze-duo-cam-doorbell.png",
+      "price": 69.98,
+      "quantity": 0
+    },
+    {
+      "id": "wyze-battery-cam-pro",
+      "category": "cameras",
+      "name": "Wyze Battery Cam Pro",
+      "description": "Protect anywhere. See everything in 2.5K HDR.",
+      "image": "/images/wyze-battery-cam-pro.png",
+      "variants": [
+        {
+          "id": "white",
+          "name": "White"
+        },
+        {
+          "id": "black",
+          "name": "Black"
+        }
+      ],
+      "price": 89.98,
+      "quantity": 0
+    }
+  ]
+}
