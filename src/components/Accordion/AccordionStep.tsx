@@ -1,4 +1,4 @@
-import { CameraIcon, ChevronIcon, GridIcon, SensorIcon, ShieldIcon } from "../icons/Icons";
+import { CameraIcon, ChevronIcon, GridIcon, SensorIcon, ShieldIcon } from "../../icons/Icons";
 import type {
   ActiveVariants,
   QuantityHandler,
@@ -6,11 +6,10 @@ import type {
   Step,
   StepIconName,
   VariantSelectHandler,
-} from "../types/bundle";
-import { countSelectedInStep } from "../utils/pricing";
+} from "../../types/bundle";
+import { countSelectedInStep } from "../../utils/pricing";
+import ProductCard from "../ProductCard/ProductCard";
 import styles from "./AccordionStep.module.css";
-import ProductCard from "./ProductCard";
-
 const STEP_ICONS: Record<StepIconName, typeof GridIcon> = {
   camera: CameraIcon,
   shield: ShieldIcon,

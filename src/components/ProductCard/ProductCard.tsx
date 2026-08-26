@@ -1,9 +1,10 @@
-import { PlaceholderProductIcon } from "../icons/Icons";
-import type { Product, QuantityHandler, SelectionType, Selections, VariantSelectHandler } from "../types/bundle";
-import { formatCurrency, lineKey } from "../utils/pricing";
-import QuantityStepper from "./QuantityStepper";
+import { PlaceholderProductIcon } from "../../icons/Icons";
+import type { Product, QuantityHandler, SelectionType, Selections, VariantSelectHandler } from "../../types/bundle";
+import { formatCurrency, lineKey } from "../../utils/pricing";
+import QuantityStepper from "../QuantityStepper/QuantityStepper";
 import styles from "./ProductCard.module.css";
-import VariantSelector from "./VariantSelector";
+import VariantSelector from "../VariantSelector/VariantSelector";
+
 
 interface ProductCardProps {
   product: Product;

@@ -1,5 +1,5 @@
-import AccordionStep from "./components/AccordionStep";
-import ReviewPanel from "./components/ReviewPanel";
+import AccordionStep from "./components/Accordion/AccordionStep";
+import ReviewPanel from "./components/ReviewPanel/ReviewPanel";
 import { useBundleState } from "./hooks/useBundleState";
 import type { Product, Step } from "./types/bundle";
 import styles from "./App.module.css";

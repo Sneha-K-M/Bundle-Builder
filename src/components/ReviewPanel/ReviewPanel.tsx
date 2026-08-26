@@ -1,7 +1,8 @@
-import { BadgeCheckIcon, TruckIcon } from "../icons/Icons";
-import type { Catalog, QuantityHandler, SaveStatus, Selections } from "../types/bundle";
-import { computeTotals, formatCurrency } from "../utils/pricing";
-import ReviewLineItem from "./ReviewLineItem";
+import { BadgeCheckIcon, TruckIcon } from "../../icons/Icons";
+import type { Catalog, QuantityHandler, SaveStatus, Selections } from "../../types/bundle";
+import { computeTotals, formatCurrency } from "../../utils/pricing";
+import ReviewLineItem from "../ReviewLineItem/ReviewLineItem";
+
 import styles from "./ReviewPanel.module.css";
 
 const CATEGORY_ORDER = ["Cameras", "Sensors", "Accessories", "Plan"] as const;

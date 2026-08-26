@@ -1,7 +1,8 @@
-import { PlaceholderProductIcon } from "../icons/Icons";
-import type { LineItem, QuantityHandler } from "../types/bundle";
-import { formatCurrency } from "../utils/pricing";
-import QuantityStepper from "./QuantityStepper";
+import { PlaceholderProductIcon } from "../../icons/Icons";
+import QuantityStepper from "../QuantityStepper/QuantityStepper";
+import type { LineItem, QuantityHandler } from "../../types/bundle";
+import { formatCurrency } from "../../utils/pricing";
+
 import styles from "./ReviewLineItem.module.css";
 
 interface ReviewLineItemProps {
