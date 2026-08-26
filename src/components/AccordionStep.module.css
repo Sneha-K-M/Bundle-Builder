@@ -1,22 +1,21 @@
-.step {
+.stepOpen {
   background: var(--color-panel-bg);
-}
-
-.withDivider {
-  border-bottom: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
 }
 
 .header {
   width: 100%;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
   text-align: left;
   background: transparent;
   border: none;
-  padding: 18px 24px 16px;
+  padding: 0;
 }
 
 .headerTop {
-  margin-bottom: 8px;
+  padding: 12px 15px 0;
 }
 
 .stepLabel {
@@ -31,6 +30,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  min-height: 71px;
+  padding: 20px 15px;
+  border-top: 0.5px solid var(--color-step-rule);
+  border-bottom: 0.5px solid var(--color-step-rule);
+}
+
+.stepOpen .headerMain {
+  border-color: transparent;
 }
 
 .titleRow {
@@ -77,24 +84,20 @@
 }
 
 .panel {
-  padding: 0 24px 24px;
+  padding: 0 15px 24px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 19px;
 }
 
-.danglingCard {
-  grid-column: 1 / -1;
+.cardCell {
   display: flex;
-  justify-content: center;
-}
-
-.danglingCard > * {
-  width: 100%;
-  max-width: calc(50% - 8px);
+  min-width: 0;
+  container-type: inline-size;
 }
 
 .nextBtn {
@@ -114,24 +117,66 @@
   background: var(--color-accent-soft);
 }
 
-@media (max-width: 720px) {
-  .grid {
-    grid-template-columns: 1fr;
+/* Below 1440: two cards per row, with an odd last card centred. */
+@media (max-width: 1439px) {
+  .headerMain {
+    min-height: 67px;
   }
 
-  .danglingCard > * {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .loneCard {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
+  .loneCard > * {
+    max-width: calc(50% - 9.5px);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+  }
+
+  .loneCard {
+    grid-column: auto;
+  }
+
+  .loneCard > * {
     max-width: 100%;
   }
+}
 
-  .header {
-    padding: 16px 16px 14px;
+@media (max-width: 767px) {
+  .headerMain {
+    min-height: 65px;
   }
 
   .panel {
-    padding: 0 16px 20px;
+    padding: 0 15px 20px;
   }
 
   .title {
     font-size: 17px;
+  }
+}
+
+@media (max-width: 599px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+  }
+
+  .loneCard {
+    grid-column: auto;
+  }
+
+  .loneCard > * {
+    max-width: 100%;
   }
 }

@@ -21,7 +21,6 @@ const STEP_ICONS: Record<StepIconName, typeof GridIcon> = {
 interface AccordionStepProps {
   step: Step;
   isOpen: boolean;
-  isLast: boolean;
   selections: Selections;
   activeVariants: ActiveVariants;
   onToggle: () => void;
@@ -35,7 +34,6 @@ interface AccordionStepProps {
 export default function AccordionStep({
   step,
   isOpen,
-  isLast,
   selections,
   activeVariants,
   onToggle,
@@ -49,7 +47,7 @@ export default function AccordionStep({
   const selectedCount = countSelectedInStep(step, selections);
 
   return (
-    <section className={`${styles.step} ${!isLast ? styles.withDivider : ""}`}>
+    <section className={isOpen ? styles.stepOpen : undefined}>
       <button
         type="button"
         className={styles.header}
@@ -75,9 +73,13 @@ export default function AccordionStep({
         <div className={styles.panel}>
           <div className={styles.grid}>
             {step.products.map((product, index) => {
-              const isDangling = step.products.length % 2 === 1 && index === step.products.length - 1;
+              const isLoneLastCard =
+                step.products.length % 2 === 1 && index === step.products.length - 1;
               return (
-                <div key={product.id} className={isDangling ? styles.danglingCard : undefined}>
+                <div
+                  key={product.id}
+                  className={`${styles.cardCell} ${isLoneLastCard ? styles.loneCard : ""}`}
+                >
                   <ProductCard
                     product={product}
                     selections={selections}

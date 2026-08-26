@@ -1,13 +1,28 @@
 .panel {
+  margin-top: 40px;
   background: var(--color-panel-bg);
   border-radius: var(--radius-lg);
-  padding: 24px;
-  position: sticky;
-  top: 20px;
-  align-self: start;
+  padding: 48px;
 }
 
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.summary {
+  min-width: 0;
+}
+
+.order {
+  min-width: 0;
+}
+
+/* Only the narrow tablet panel carries the REVIEW label. */
 .eyebrow {
+  display: none;
   margin: 0 0 6px;
   font-size: 11px;
   font-weight: 700;
@@ -57,7 +72,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 0 16px;
+  padding: 6px 0 0;
 }
 
 .utilityIcon {
@@ -86,9 +101,8 @@
 
 .pricing {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .strike {
@@ -105,10 +119,9 @@
 
 .guaranteeRow {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 4px 0 4px;
+  gap: 20px;
 }
 
 .guaranteeBadge {
@@ -139,12 +152,32 @@
   text-transform: uppercase;
 }
 
-.guaranteeRight {
-  flex: 1;
+.returns {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.returnsTitle {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.returnsCopy {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.totalRow {
+  flex: 1 1 100%;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
 }
 
 .financingPill {
@@ -180,12 +213,12 @@
   font-size: 12.5px;
   font-weight: 600;
   color: var(--color-success);
-  text-align: right;
+  text-align: center;
 }
 
 .checkoutBtn {
   width: 100%;
-  margin-top: 16px;
+  margin-top: 12px;
   background: var(--color-accent);
   color: #fff;
   border: none;
@@ -226,11 +259,52 @@
   margin: 4px 0 0;
   text-align: center;
   font-size: 11.5px;
-  color: var(--color-price-active);
+  color: var(--color-danger);
 }
 
-@media (max-width: 960px) {
+/* Below 1440: a single narrow column beside the steps, with the seal
+   and the total sharing one row and no returns copy. */
+@media (max-width: 1439px) {
+  .panel {
+    margin-top: 0;
+    padding: 24px;
+    position: sticky;
+    top: 20px;
+  }
+
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .returns {
+    display: none;
+  }
+
+  .totalRow {
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    margin-top: 0;
+  }
+
+  .eyebrow {
+    display: block;
+  }
+}
+
+@media (max-width: 767px) {
   .panel {
     position: static;
+    margin-top: 32px;
+    padding: 24px 15px;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .guaranteeRow {
+    gap: 14px;
   }
 }

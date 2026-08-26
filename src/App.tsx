@@ -42,17 +42,15 @@ export default function App() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.pageHeader}>
-      </header>
+      <h1 className={styles.pageTitle}>Let&rsquo;s get started!</h1>
 
-      <div className={styles.layout}>
+      <div className={styles.container}>
         <main className={styles.builder}>
           {steps.map((step, index) => (
             <AccordionStep
               key={step.id}
               step={step}
               isOpen={openStepId === step.id}
-              isLast={index === steps.length - 1}
               selections={selections}
               activeVariants={activeVariants}
               onToggle={() => toggleStep(step.id)}

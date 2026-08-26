@@ -34,14 +34,15 @@ export default function ProductCard({
 
   return (
     <div className={`${styles.card} ${isSelected ? styles.selected : ""}`}>
-      {product.badge && <span className={styles.badge}>{product.badge}</span>}
-
-      <div className={styles.body}>
-        <div className={styles.media}>
+      <div className={styles.media}>
+        {product.badge && <span className={styles.badge}>{product.badge}</span>}
+        <div className={styles.mediaFrame}>
           <PlaceholderProductIcon label={product.name} className={styles.mediaIcon} />
         </div>
+      </div>
 
-        <div className={styles.content}>
+      <div className={styles.content}>
+        <div className={styles.info}>
           <h3 className={styles.title}>{product.name}</h3>
           <p className={styles.description}>
             {product.description}{" "}
@@ -59,36 +60,36 @@ export default function ProductCard({
               onSelect={(variantId) => onSelectVariant(product.id, variantId)}
             />
           )}
+        </div>
 
-          <div className={styles.footer}>
-            {selectionType === "single" ? (
-              <button
-                type="button"
-                className={`${styles.selectBtn} ${isSelected ? styles.selectBtnActive : ""}`}
-                onClick={() => onToggleSingle(product, effectiveVariantId)}
-              >
-                {isSelected ? "✓ Selected" : "Select plan"}
-              </button>
-            ) : (
-              <QuantityStepper
-                quantity={quantity}
-                min={min}
-                label={product.name}
-                disabled={Boolean(product.locked && quantity <= min)}
-                onDecrement={() => onDecrement(product, effectiveVariantId)}
-                onIncrement={() => onIncrement(product, effectiveVariantId)}
-              />
+        <div className={styles.footer}>
+          {selectionType === "single" ? (
+            <button
+              type="button"
+              className={`${styles.selectBtn} ${isSelected ? styles.selectBtnActive : ""}`}
+              onClick={() => onToggleSingle(product, effectiveVariantId)}
+            >
+              {isSelected ? "✓ Selected" : "Select plan"}
+            </button>
+          ) : (
+            <QuantityStepper
+              quantity={quantity}
+              min={min}
+              label={product.name}
+              disabled={Boolean(product.locked && quantity <= min)}
+              onDecrement={() => onDecrement(product, effectiveVariantId)}
+              onIncrement={() => onIncrement(product, effectiveVariantId)}
+            />
+          )}
+
+          <div className={styles.pricing}>
+            {product.originalPrice != null && product.originalPrice > product.price && (
+              <span className={styles.priceStrike}>{formatCurrency(product.originalPrice)}</span>
             )}
-
-            <div className={styles.pricing}>
-              {product.originalPrice != null && product.originalPrice > product.price && (
-                <span className={styles.priceStrike}>{formatCurrency(product.originalPrice)}</span>
-              )}
-              <span className={styles.price}>
-                {product.price === 0 ? "FREE" : formatCurrency(product.price)}
-                {product.billingSuffix ?? ""}
-              </span>
-            </div>
+            <span className={styles.price}>
+              {product.price === 0 ? "FREE" : formatCurrency(product.price)}
+              {product.billingSuffix ?? ""}
+            </span>
           </div>
         </div>
       </div>

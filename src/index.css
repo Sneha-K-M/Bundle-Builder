@@ -11,11 +11,12 @@
   --color-accent-hover: #4c3fd6;
   --color-accent-soft: #ece9fd;
 
-  --color-badge-bg: #5b4fe0;
+  --color-badge-bg: #4e2fd2;
   --color-badge-text: #ffffff;
 
-  --color-price-active: #dc4b3e;
-  --color-price-strike: #b7b3c9;
+  --color-price-was: #dc4b3e;
+  --color-price-now: #1a1830;
+  --color-danger: #dc4b3e;
 
   --color-review-price: #5b4fe0;
   --color-review-strike: #a9acc4;
@@ -27,6 +28,7 @@
 
   --color-success: #17a672;
   --color-divider: #dfe1f2;
+  --color-step-rule: #1f1f1f;
 
   --radius-sm: 8px;
   --radius-md: 12px;
