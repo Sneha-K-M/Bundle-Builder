@@ -16,6 +16,10 @@
   height: 100%;
 }
 
+.thumbImage {
+  object-fit: contain;
+}
+
 .name {
   font-size: 13px;
   font-weight: 600;

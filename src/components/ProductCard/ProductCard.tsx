@@ -1,5 +1,6 @@
 import { PlaceholderProductIcon } from "../../icons/Icons";
 import type { Product, QuantityHandler, SelectionType, Selections, VariantSelectHandler } from "../../types/bundle";
+import { productArtUrl } from "../../utils/assets";
 import { formatCurrency, lineKey } from "../../utils/pricing";
 import QuantityStepper from "../QuantityStepper/QuantityStepper";
 import styles from "./ProductCard.module.css";
@@ -32,13 +33,22 @@ export default function ProductCard({
   const quantity = selections.get(lineKey(product.id, effectiveVariantId)) ?? 0;
   const isSelected = quantity > 0;
   const min = product.minQuantity ?? 0;
+  const artUrl = productArtUrl(product.image);
 
   return (
     <div className={`${styles.card} ${isSelected ? styles.selected : ""}`}>
       <div className={styles.media}>
         {product.badge && <span className={styles.badge}>{product.badge}</span>}
         <div className={styles.mediaFrame}>
-          <PlaceholderProductIcon label={product.name} className={styles.mediaIcon} />
+          {artUrl ? (
+            <img
+              src={artUrl}
+              alt={product.name}
+              className={`${styles.mediaIcon} ${styles.mediaImage}`}
+            />
+          ) : (
+            <PlaceholderProductIcon label={product.name} className={styles.mediaIcon} />
+          )}
         </div>
       </div>
 
@@ -56,6 +66,7 @@ export default function ProductCard({
 
           {hasVariants && (
             <VariantSelector
+              imageKey={product.image}
               variants={product.variants}
               activeVariantId={effectiveVariantId}
               onSelect={(variantId) => onSelectVariant(product.id, variantId)}

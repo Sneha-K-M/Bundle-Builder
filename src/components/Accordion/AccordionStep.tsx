@@ -7,6 +7,7 @@ import type {
   StepIconName,
   VariantSelectHandler,
 } from "../../types/bundle";
+import { iconUrl } from "../../utils/assets";
 import { countSelectedInStep } from "../../utils/pricing";
 import ProductCard from "../ProductCard/ProductCard";
 import styles from "./AccordionStep.module.css";
@@ -43,6 +44,7 @@ export default function AccordionStep({
   onToggleSingle,
 }: AccordionStepProps) {
   const StepIcon = STEP_ICONS[step.icon] ?? GridIcon;
+  const stepIconUrl = iconUrl(step.icon);
   const selectedCount = countSelectedInStep(step, selections);
 
   return (
@@ -58,7 +60,11 @@ export default function AccordionStep({
         </div>
         <div className={styles.headerMain}>
           <span className={styles.titleRow}>
-            <StepIcon className={styles.titleIcon} />
+            {stepIconUrl ? (
+              <img src={stepIconUrl} alt="" className={styles.titleIcon} />
+            ) : (
+              <StepIcon className={styles.titleIcon} />
+            )}
             <span className={styles.title}>{step.title}</span>
           </span>
           <span className={`${styles.state} ${isOpen ? styles.stateOpen : ""}`}>

@@ -1,6 +1,7 @@
 import { PlaceholderProductIcon } from "../../icons/Icons";
 import QuantityStepper from "../QuantityStepper/QuantityStepper";
 import type { LineItem, QuantityHandler } from "../../types/bundle";
+import { productArtUrl } from "../../utils/assets";
 import { formatCurrency } from "../../utils/pricing";
 
 import styles from "./ReviewLineItem.module.css";
@@ -16,6 +17,7 @@ export default function ReviewLineItem({ item, onIncrement, onDecrement }: Revie
   const showStrike = lineOriginal > lineTotal;
   const min = product.minQuantity ?? 0;
   const isSingleSelect = selectionType === "single";
+  const artUrl = productArtUrl(product.image);
 
   const displayName =
     variant && variant.label ? `${product.name} — ${variant.label}` : product.name;
@@ -23,7 +25,11 @@ export default function ReviewLineItem({ item, onIncrement, onDecrement }: Revie
   return (
     <div className={`${styles.row} ${isSingleSelect ? styles.rowNoStepper : ""}`}>
       <div className={styles.thumb}>
-        <PlaceholderProductIcon label={product.name} className={styles.thumbIcon} />
+        {artUrl ? (
+          <img src={artUrl} alt="" className={`${styles.thumbIcon} ${styles.thumbImage}`} />
+        ) : (
+          <PlaceholderProductIcon label={product.name} className={styles.thumbIcon} />
+        )}
       </div>
       <div className={styles.name}>{displayName}</div>
       <div className={styles.stepperSlot}>

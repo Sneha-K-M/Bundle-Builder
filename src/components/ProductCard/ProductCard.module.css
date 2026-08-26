@@ -24,14 +24,18 @@
 }
 
 .media {
+  position: relative;
   flex-shrink: 0;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
+/* Sits over the top-left of the artwork so the image can occupy the whole
+   media box at its Figma size. */
 .badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -49,18 +53,27 @@
   white-space: nowrap;
 }
 
+/* 202.6 x 117.394 once the five-across column is at its full width. The
+   ratio keeps it correct as the column flexes. */
 .mediaFrame {
   flex: 0 0 auto;
-  height: 96px;
+  width: 100%;
+  aspect-ratio: 202.6 / 117.394;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
 .mediaIcon {
-  width: 96px;
-  height: auto;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.mediaImage {
+  object-fit: contain;
 }
 
 .content {
@@ -158,18 +171,15 @@
     min-height: 159px;
   }
 
+  /* 101 x 137 image: the full inner height of the 159 card. */
   .media {
-    width: 96px;
+    width: 101px;
   }
 
   .mediaFrame {
-    flex: 1;
-    height: auto;
-    min-height: 0;
-  }
-
-  .mediaIcon {
-    width: 100%;
+    width: 101px;
+    height: 137px;
+    aspect-ratio: auto;
   }
 
   .content {
@@ -198,6 +208,16 @@
   }
 }
 
+/* Phones get one stacked card per row, so the landscape box would run
+   nearly 200px tall at full width. Cap it at the laptop image height and
+   let the artwork centre inside. */
+@media (max-width: 767px) {
+  .mediaFrame {
+    height: 137px;
+    aspect-ratio: auto;
+  }
+}
+
 /* Narrower than this the side-by-side card cannot breathe, so fall back
    to the stacked layout regardless of viewport. Must stay last so it
    wins over the tablet rules above. */
@@ -214,11 +234,9 @@
 
   .mediaFrame {
     flex: 0 0 auto;
-    height: 96px;
-  }
-
-  .mediaIcon {
-    width: 96px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 202.6 / 117.394;
   }
 
   .content {

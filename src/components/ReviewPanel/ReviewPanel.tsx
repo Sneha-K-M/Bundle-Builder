@@ -1,5 +1,6 @@
 import { BadgeCheckIcon, TruckIcon } from "../../icons/Icons";
 import type { Catalog, QuantityHandler, SaveStatus, Selections } from "../../types/bundle";
+import { iconUrl } from "../../utils/assets";
 import { computeTotals, formatCurrency } from "../../utils/pricing";
 import ReviewLineItem from "../ReviewLineItem/ReviewLineItem";
 
@@ -33,6 +34,8 @@ export default function ReviewPanel({
   const hasAnyItems = Object.values(lineItemsByCategory).some((list) => list.length > 0);
 
   const saveLabel = saveStatus === "saved" ? "Saved!" : "Save my system for later";
+  const shippingIconUrl = iconUrl("truck");
+  const guaranteeIconUrl = iconUrl("badge-check");
 
   return (
     <section className={styles.panel} aria-label="Your security system review">
@@ -68,7 +71,11 @@ export default function ReviewPanel({
 
           <div className={styles.utilityRow}>
             <div className={styles.utilityIcon}>
-              <TruckIcon className={styles.icon} />
+              {shippingIconUrl ? (
+                <img src={shippingIconUrl} alt="" className={styles.icon} />
+              ) : (
+                <TruckIcon className={styles.icon} />
+              )}
             </div>
             <div className={styles.utilityLabel}>Fast Shipping</div>
             <div className={styles.pricing}>
@@ -81,7 +88,11 @@ export default function ReviewPanel({
         <div className={styles.order}>
           <div className={styles.guaranteeRow}>
             <div className={styles.guaranteeBadge}>
-              <BadgeCheckIcon className={styles.guaranteeIcon} />
+              {guaranteeIconUrl ? (
+                <img src={guaranteeIconUrl} alt="" className={styles.guaranteeIcon} />
+              ) : (
+                <BadgeCheckIcon className={styles.guaranteeIcon} />
+              )}
               <span className={styles.guaranteeText}>
                 100%
                 <br />
