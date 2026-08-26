@@ -1,0 +1,137 @@
+.step {
+  background: var(--color-panel-bg);
+}
+
+.withDivider {
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.header {
+  width: 100%;
+  display: block;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 18px 24px 16px;
+}
+
+.headerTop {
+  margin-bottom: 8px;
+}
+
+.stepLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.headerMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.titleIcon {
+  width: 22px;
+  height: 22px;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.count {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-muted);
+}
+
+.stateOpen .chevron {
+  color: var(--color-accent);
+}
+
+.panel {
+  padding: 0 24px 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.danglingCard {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+}
+
+.danglingCard > * {
+  width: 100%;
+  max-width: calc(50% - 8px);
+}
+
+.nextBtn {
+  display: block;
+  margin: 20px auto 0;
+  background: #fff;
+  border: 1.5px solid var(--color-accent);
+  color: var(--color-accent);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 28px;
+  border-radius: var(--radius-sm);
+  transition: background 0.12s ease;
+}
+
+.nextBtn:hover {
+  background: var(--color-accent-soft);
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .danglingCard > * {
+    max-width: 100%;
+  }
+
+  .header {
+    padding: 16px 16px 14px;
+  }
+
+  .panel {
+    padding: 0 16px 20px;
+  }
+
+  .title {
+    font-size: 17px;
+  }
+}

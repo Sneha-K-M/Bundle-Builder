@@ -1,0 +1,236 @@
+.panel {
+  background: var(--color-panel-bg);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: sticky;
+  top: 20px;
+  align-self: start;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.heading {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.subheading {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-divider);
+  margin: 16px 0;
+}
+
+.section + .section {
+  margin-top: 4px;
+}
+
+.sectionLabel {
+  margin: 0 0 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: var(--color-text-muted);
+}
+
+.emptyState {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.utilityRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0 16px;
+}
+
+.utilityIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e2f6ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 17px;
+  height: 17px;
+  color: var(--color-success);
+}
+
+.utilityLabel {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.pricing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.strike {
+  font-size: 11px;
+  color: var(--color-review-strike);
+  text-decoration: line-through;
+}
+
+.freePrice {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-review-price);
+}
+
+.guaranteeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0 4px;
+}
+
+.guaranteeBadge {
+  flex-shrink: 0;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2px;
+}
+
+.guaranteeIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-accent);
+}
+
+.guaranteeText {
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-accent);
+  text-transform: uppercase;
+}
+
+.guaranteeRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.financingPill {
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.totalBlock {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.totalStrike {
+  font-size: 14px;
+  color: var(--color-review-strike);
+  text-decoration: line-through;
+}
+
+.total {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.savings {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-success);
+  text-align: right;
+}
+
+.checkoutBtn {
+  width: 100%;
+  margin-top: 16px;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px;
+  transition: background 0.12s ease;
+}
+
+.checkoutBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+.saveLink {
+  display: block;
+  margin: 12px auto 0;
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.saveLink:hover {
+  color: var(--color-text-primary);
+}
+
+.restoredNote {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--color-success);
+}
+
+.errorNote {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--color-price-active);
+}
+
+@media (max-width: 960px) {
+  .panel {
+    position: static;
+  }
+}

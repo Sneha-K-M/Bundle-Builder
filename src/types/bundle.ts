@@ -1,0 +1,95 @@
+export type StepId = "cameras" | "plan" | "sensors" | "accessories";
+
+export type StepIconName = "camera" | "shield" | "sensor" | "grid";
+
+export type SelectionType = "multi" | "single";
+
+export type SaveStatus = "idle" | "saved" | "error" | "restored";
+
+export interface ProductVariant {
+  id: string;
+  label: string | null;
+  swatch?: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  learnMoreUrl: string;
+  image: string;
+  badge: string | null;
+  originalPrice: number | null;
+  price: number;
+  billingSuffix?: string;
+  variants: ProductVariant[];
+  defaultVariant: string | null;
+  seedQuantities: Record<string, number>;
+  locked?: boolean;
+  minQuantity?: number;
+}
+
+export interface Step {
+  id: StepId;
+  stepNumber: number;
+  title: string;
+  icon: StepIconName;
+  category: string;
+  nextLabel: string | null;
+  selectionType?: SelectionType;
+  products: Product[];
+}
+
+export interface ProductsData {
+  steps: Step[];
+}
+
+export type LineKey = string;
+
+export type Selections = Map<LineKey, number>;
+
+export type ActiveVariants = Map<string, string>;
+
+export interface CatalogEntry {
+  product: Product;
+  variant: ProductVariant;
+  step: Step;
+}
+
+export type Catalog = Map<LineKey, CatalogEntry>;
+
+export interface LineItem {
+  key: LineKey;
+  product: Product;
+  variant: ProductVariant;
+  quantity: number;
+  unitPrice: number;
+  unitOriginal: number;
+  lineTotal: number;
+  lineOriginal: number;
+  selectionType: SelectionType;
+}
+
+export interface BundleTotals {
+  subtotal: number;
+  originalSubtotal: number;
+  savings: number;
+  financingPerMonth: number;
+  lineItemsByCategory: Record<string, LineItem[]>;
+}
+
+export interface SavedBundle {
+  selections: Selections;
+  activeVariants: ActiveVariants;
+  openStepId: StepId | null;
+  savedAt: string | null;
+}
+
+export interface QuantityOptions {
+  min?: number;
+  product?: Product;
+}
+
+export type QuantityHandler = (product: Product, variantId?: string) => void;
+
+export type VariantSelectHandler = (productId: string, variantId: string) => void;

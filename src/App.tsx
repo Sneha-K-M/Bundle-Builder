@@ -1,41 +1,82 @@
-import { useBundleStore } from "./store/bundleStore";
+import AccordionStep from "./components/AccordionStep";
+import ReviewPanel from "./components/ReviewPanel";
+import { useBundleState } from "./hooks/useBundleState";
+import type { Product, Step } from "./types/bundle";
+import styles from "./App.module.css";
 
-function App() {
-  const items = useBundleStore((state) => state.items);
-  const increment = useBundleStore((state) => state.increment);
-  const decrement = useBundleStore((state) => state.decrement);
+export default function App() {
+  const {
+    steps,
+    catalog,
+    selections,
+    activeVariants,
+    openStepId,
+    saveStatus,
+    incrementQuantity,
+    setActiveVariant,
+    toggleStep,
+    goToStep,
+    persistBundle,
+  } = useBundleState();
 
-  const camera = items.find(
-    (item) =>
-      item.productId === "wyze-cam-v4" &&
-      item.variantId === "white"
-  );
+  const handleSelectVariant = (productId: string, variantId: string) => {
+    setActiveVariant(productId, variantId);
+  };
+
+  const handleIncrement = (product: Product, variantId?: string) => {
+    incrementQuantity(product.id, variantId ?? "base", 1, { min: product.minQuantity ?? 0 });
+  };
+
+  const handleDecrement = (product: Product, variantId?: string) => {
+    incrementQuantity(product.id, variantId ?? "base", -1, { min: product.minQuantity ?? 0 });
+  };
+
+  const handleToggleSingle = (product: Product, variantId: string | undefined, step: Step) => {
+    for (const sibling of step.products) {
+      if (sibling.id !== product.id) {
+        incrementQuantity(sibling.id, "base", Number.NEGATIVE_INFINITY, { min: 0 });
+      }
+    }
+    incrementQuantity(product.id, variantId ?? "base", 1, { min: 0 });
+  };
 
   return (
-    <main>
-      <h1>Bundle Builder</h1>
+    <div className={styles.page}>
+      <header className={styles.pageHeader}>
+      </header>
 
-      <p>
-        Wyze Cam v4: {camera?.quantity ?? 0}
-      </p>
+      <div className={styles.layout}>
+        <main className={styles.builder}>
+          {steps.map((step, index) => (
+            <AccordionStep
+              key={step.id}
+              step={step}
+              isOpen={openStepId === step.id}
+              isLast={index === steps.length - 1}
+              selections={selections}
+              activeVariants={activeVariants}
+              onToggle={() => toggleStep(step.id)}
+              onNext={() => {
+                const next = steps[index + 1];
+                if (next) goToStep(next.id);
+              }}
+              onSelectVariant={handleSelectVariant}
+              onIncrement={handleIncrement}
+              onDecrement={handleDecrement}
+              onToggleSingle={(product, variantId) => handleToggleSingle(product, variantId, step)}
+            />
+          ))}
+        </main>
 
-      <button
-        onClick={() =>
-          decrement("wyze-cam-v4", "white")
-        }
-      >
-        -
-      </button>
-
-      <button
-        onClick={() =>
-          increment("wyze-cam-v4", "white")
-        }
-      >
-        +
-      </button>
-    </main>
+        <ReviewPanel
+          catalog={catalog}
+          selections={selections}
+          onIncrement={handleIncrement}
+          onDecrement={handleDecrement}
+          onSave={persistBundle}
+          saveStatus={saveStatus}
+        />
+      </div>
+    </div>
   );
 }
-
-export default App;
