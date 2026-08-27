@@ -32,6 +32,7 @@ export default function Price({
         "flex whitespace-nowrap",
         layout === "inline" && "flex-row items-baseline gap-1.5",
         layout === "stack" && "flex-col items-end gap-px",
+        tone === "total" && layout === "inline" && "gap-2",
         tone === "card" && layout === "inline" && "md:max-xl:flex-col md:max-xl:items-end md:max-xl:gap-px",
         className
       )}
@@ -42,7 +43,7 @@ export default function Price({
             "line-through",
             tone === "card" && "text-[12.5px] text-was",
             tone === "review" && "text-[11px] text-strike",
-            tone === "total" && "text-sm text-strike"
+            tone === "total" && "text-[15px] text-strike"
           )}
         >
           {formatCents(compareAtCents)}
@@ -53,7 +54,7 @@ export default function Price({
           "font-bold",
           tone === "card" && "text-sm text-ink",
           tone === "review" && "text-[13.5px] text-review",
-          tone === "total" && "text-2xl font-extrabold text-ink"
+          tone === "total" && "text-[26px] font-extrabold text-accent"
         )}
       >
         {display}

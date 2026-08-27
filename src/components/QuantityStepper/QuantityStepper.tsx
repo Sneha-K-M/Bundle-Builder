@@ -24,19 +24,19 @@ export default function QuantityStepper({
 }: QuantityStepperProps) {
   const atMin = quantity <= min;
   const groupLabel = label ? `Quantity of ${label}` : "Quantity";
+  const compact = size === "sm";
+  const box = compact
+    ? "h-6 w-6 min-h-6 min-w-6 rounded-[4px] text-sm"
+    : "h-8 w-8 min-h-8 min-w-8 rounded-[5px] text-base";
 
   return (
-    <div
-      className={cx(
-        "inline-flex h-8 items-center overflow-hidden rounded-sm border border-line-strong bg-stepper",
-        size === "sm" && "h-8"
-      )}
-      role="group"
-      aria-label={groupLabel}
-    >
+    <div className="inline-flex items-center gap-[3px]" role="group" aria-label={groupLabel}>
       <IconButton
         label={`Decrease ${groupLabel.toLowerCase()}`}
-        className="h-full min-h-8 w-8 min-w-8 border-0 bg-transparent text-base leading-none text-muted hover:bg-stepper-hover hover:text-ink disabled:hover:bg-transparent disabled:hover:text-muted"
+        className={cx(
+          "border border-line-strong bg-white leading-none text-muted hover:bg-stepper-hover hover:text-ink disabled:bg-stepper disabled:hover:bg-stepper disabled:hover:text-muted",
+          box
+        )}
         onClick={onDecrement}
         disabled={decrementDisabled || atMin}
       >
@@ -44,8 +44,8 @@ export default function QuantityStepper({
       </IconButton>
       <span
         className={cx(
-          "min-w-[26px] text-center text-sm font-semibold text-ink",
-          size === "sm" && "min-w-5 text-[13px]"
+          "inline-flex items-center justify-center bg-transparent font-semibold text-ink",
+          compact ? "min-w-5 px-0.5 text-[13px]" : "min-w-6 px-1 text-sm"
         )}
         aria-live="polite"
         aria-atomic="true"
@@ -55,8 +55,8 @@ export default function QuantityStepper({
       <IconButton
         label={`Increase ${groupLabel.toLowerCase()}`}
         className={cx(
-          "h-full min-h-8 w-8 min-w-8 border-0 bg-transparent leading-none text-muted hover:bg-stepper-hover hover:text-ink disabled:hover:bg-transparent disabled:hover:text-muted",
-          size === "sm" ? "text-sm" : "text-base"
+          "border border-line-strong bg-white leading-none text-muted hover:bg-stepper-hover hover:text-ink disabled:bg-stepper disabled:hover:bg-stepper disabled:hover:text-muted",
+          box
         )}
         onClick={onIncrement}
         disabled={incrementDisabled}

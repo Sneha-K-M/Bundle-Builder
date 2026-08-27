@@ -104,6 +104,7 @@ function parseProduct(raw: unknown, stepId: StepId): Product {
   };
 
   if (isString(raw.billingSuffix)) product.billingSuffix = raw.billingSuffix;
+  if (isString(raw.nameAccent)) product.nameAccent = raw.nameAccent;
   if (raw.locked === true) product.locked = true;
   if (isNumber(raw.minQuantity)) product.minQuantity = raw.minQuantity;
 

@@ -31,6 +31,7 @@ export interface Product {
   seedQuantities: Record<string, number>;
   locked?: boolean;
   minQuantity?: number;
+  nameAccent?: string;
 }
 
 export interface Step {

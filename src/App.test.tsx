@@ -10,11 +10,12 @@ describe("Bundle Builder", () => {
     render(<App />);
 
     expect(screen.getByRole("heading", { name: /choose your cameras/i })).toBeInTheDocument();
-    expect(screen.getByText("Wyze Cam v4 — White")).toBeInTheDocument();
-    expect(screen.getByText("Wyze Cam Pan v3 — White")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /your security system/i })).toBeInTheDocument();
+    expect(screen.getByText("Wyze Cam v4", { selector: "div" })).toBeInTheDocument();
+    expect(screen.getByText("Wyze Cam Pan v3", { selector: "div" })).toBeInTheDocument();
 
     const cardStepper = screen.getByRole("group", { name: "Quantity of Wyze Cam v4" });
-    const reviewStepper = screen.getByRole("group", { name: "Quantity of Wyze Cam v4 — White" });
+    const reviewStepper = screen.getByRole("group", { name: "Quantity of Wyze Cam v4 in review" });
     expect(within(cardStepper).getByText("1")).toBeInTheDocument();
     expect(within(reviewStepper).getByText("1")).toBeInTheDocument();
 
@@ -35,7 +36,7 @@ describe("Bundle Builder", () => {
 
     const cardStepper = screen.getByRole("group", { name: "Quantity of Wyze Cam v4" });
     expect(within(cardStepper).getByText("0")).toBeInTheDocument();
-    expect(screen.getByText("Wyze Cam v4 — White")).toBeInTheDocument();
+    expect(screen.getByText("Wyze Cam v4", { selector: "div" })).toBeInTheDocument();
     expect(screen.queryByText("Wyze Cam v4 — Grey")).not.toBeInTheDocument();
 
     await user.click(within(cardStepper).getByRole("button", { name: /increase/i }));
@@ -44,10 +45,14 @@ describe("Bundle Builder", () => {
     expect(screen.getByText("Wyze Cam v4 — White")).toBeInTheDocument();
     expect(screen.getByText("Wyze Cam v4 — Grey")).toBeInTheDocument();
     expect(
-      within(screen.getByRole("group", { name: "Quantity of Wyze Cam v4 — Grey" })).getByText("2")
+      within(screen.getByRole("group", { name: "Quantity of Wyze Cam v4 — Grey in review" })).getByText(
+        "2"
+      )
     ).toBeInTheDocument();
     expect(
-      within(screen.getByRole("group", { name: "Quantity of Wyze Cam v4 — White" })).getByText("1")
+      within(screen.getByRole("group", { name: "Quantity of Wyze Cam v4 — White in review" })).getByText(
+        "1"
+      )
     ).toBeInTheDocument();
   });
 

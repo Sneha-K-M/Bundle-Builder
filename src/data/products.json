@@ -101,6 +101,7 @@
         {
           "id": "cam-unlimited",
           "name": "Cam Unlimited",
+          "nameAccent": "Unlimited",
           "description": "Unlimited cloud storage & smart alerts for every camera on your account.",
           "learnMoreUrl": "https://www.wyze.com/pages/cam-unlimited",
           "image": "cam-unlimited",
