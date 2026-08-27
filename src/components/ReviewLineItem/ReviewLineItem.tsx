@@ -12,7 +12,7 @@ interface ReviewLineItemProps {
   onQuantityChange: QuantityChangeHandler;
 }
 
-export function reviewDisplayName(item: LineItem, showVariant: boolean): string {
+function reviewDisplayName(item: LineItem, showVariant: boolean): string {
   if (showVariant && item.variant.label) {
     return `${item.product.name} — ${item.variant.label}`;
   }
@@ -48,7 +48,7 @@ export default function ReviewLineItem({
       className={cx(
         "grid items-center gap-x-2.5 py-2",
         isSingleSelect
-          ? "-mx-8 grid-cols-[28px_minmax(0,1fr)_auto] px-8 py-3 max-xl:-mx-6 max-xl:px-6 max-md:-mx-[15px] max-md:px-[15px]"
+          ? "grid-cols-[28px_minmax(0,1fr)_auto] py-2.5"
           : "grid-cols-[40px_minmax(0,1fr)_auto_auto] max-xs:grid-cols-[40px_minmax(0,1fr)_auto] max-xs:[grid-template-areas:'thumb_name_price'_'thumb_stepper_price']"
       )}
     >

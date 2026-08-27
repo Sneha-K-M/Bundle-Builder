@@ -1,4 +1,5 @@
 import type { SVGProps } from "react";
+import { cx } from "../utils/cx";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -56,24 +57,24 @@ export function GridIcon(props: IconProps) {
 
 type ChevronDirection = "down" | "up" | "left" | "right";
 
-const CHEVRON_ROTATION: Record<ChevronDirection, number> = {
-  down: 0,
-  up: 180,
-  left: 90,
-  right: -90,
+const CHEVRON_ROTATION: Record<ChevronDirection, string> = {
+  down: "",
+  up: "rotate-180",
+  left: "rotate-90",
+  right: "-rotate-90",
 };
 
 export function ChevronIcon({
   direction = "down",
+  className,
   ...props
 }: IconProps & { direction?: ChevronDirection }) {
-  const rotation = CHEVRON_ROTATION[direction];
   return (
     <svg
       viewBox="0 0 10 7"
       fill="none"
       aria-hidden="true"
-      style={{ transform: `rotate(${rotation}deg)` }}
+      className={cx(CHEVRON_ROTATION[direction], className)}
       {...props}
     >
       <path

@@ -54,10 +54,9 @@ export default function AccordionStep({
   return (
     <section className={cx(isOpen && "rounded-lg bg-panel")}>
       <h2 className="m-0">
-        <button
-          type="button"
+        <Button
+          variant="disclosure"
           id={headerId}
-          className="flex w-full flex-col gap-[3px] border-0 bg-transparent p-0 text-left"
           onClick={onToggle}
           aria-expanded={isOpen}
           aria-controls={panelId}
@@ -94,7 +93,7 @@ export default function AccordionStep({
               />
             </span>
           </span>
-        </button>
+        </Button>
       </h2>
 
       <div id={panelId} role="region" aria-labelledby={headerId} hidden={!isOpen}>
@@ -128,9 +127,11 @@ export default function AccordionStep({
           </div>
 
           {step.nextLabel && (
-            <Button variant="outline" className="mx-auto mt-5 block w-fit" onClick={onNext}>
-              {step.nextLabel}
-            </Button>
+            <div className="mt-5 flex justify-center">
+              <Button variant="outline" onClick={onNext}>
+                {step.nextLabel}
+              </Button>
+            </div>
           )}
         </div>
       </div>
