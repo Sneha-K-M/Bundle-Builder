@@ -70,13 +70,19 @@ export function ChevronIcon({
   const rotation = CHEVRON_ROTATION[direction];
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 10 7"
       fill="none"
       aria-hidden="true"
       style={{ transform: `rotate(${rotation}deg)` }}
       {...props}
     >
-      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M0.5 0.5H9.5L5 6.5Z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

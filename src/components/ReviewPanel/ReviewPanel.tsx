@@ -70,9 +70,11 @@ export default function ReviewPanel({
           )}
 
           <div className={styles.utilityRow}>
-            <div className={styles.utilityIcon}>
+            <div
+              className={`${styles.utilityIcon} ${shippingIconUrl ? styles.utilityIconArt : ""}`}
+            >
               {shippingIconUrl ? (
-                <img src={shippingIconUrl} alt="" className={styles.icon} />
+                <img src={shippingIconUrl} alt="" className={styles.iconArt} />
               ) : (
                 <TruckIcon className={styles.icon} />
               )}
@@ -87,19 +89,29 @@ export default function ReviewPanel({
 
         <div className={styles.order}>
           <div className={styles.guaranteeRow}>
-            <div className={styles.guaranteeBadge}>
+            <div
+              className={`${styles.guaranteeBadge} ${
+                guaranteeIconUrl ? styles.guaranteeBadgeArt : ""
+              }`}
+            >
               {guaranteeIconUrl ? (
-                <img src={guaranteeIconUrl} alt="" className={styles.guaranteeIcon} />
+                <img
+                  src={guaranteeIconUrl}
+                  alt="100% Wyze satisfaction guarantee. Try worry-free for 30 days."
+                  className={styles.guaranteeSeal}
+                />
               ) : (
-                <BadgeCheckIcon className={styles.guaranteeIcon} />
+                <>
+                  <BadgeCheckIcon className={styles.guaranteeIcon} />
+                  <span className={styles.guaranteeText}>
+                    100%
+                    <br />
+                    satisfaction
+                    <br />
+                    guarantee
+                  </span>
+                </>
               )}
-              <span className={styles.guaranteeText}>
-                100%
-                <br />
-                satisfaction
-                <br />
-                guarantee
-              </span>
             </div>
             <div className={styles.returns}>
               <h3 className={styles.returnsTitle}>30-day hassle-free returns</h3>

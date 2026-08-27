@@ -67,7 +67,7 @@ export default function AccordionStep({
             )}
             <span className={styles.title}>{step.title}</span>
           </span>
-          <span className={`${styles.state} ${isOpen ? styles.stateOpen : ""}`}>
+          <span className={styles.state}>
             {selectedCount > 0 && <span className={styles.count}>{selectedCount} selected</span>}
             <ChevronIcon direction={isOpen ? "up" : "down"} className={styles.chevron} />
           </span>

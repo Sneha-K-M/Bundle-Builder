@@ -74,13 +74,10 @@
 }
 
 .chevron {
-  width: 16px;
-  height: 16px;
-  color: var(--color-text-muted);
-}
-
-.stateOpen .chevron {
-  color: var(--color-accent);
+  width: 10px;
+  height: 7px;
+  color: var(--color-chevron);
+  flex-shrink: 0;
 }
 
 .panel {
