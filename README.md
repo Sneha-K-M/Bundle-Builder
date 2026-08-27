@@ -1,75 +1,77 @@
-# React + TypeScript + Vite
+# Bundle Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A production-style React frontend for configuring a Wyze-style home security bundle. Customers step through cameras, a cloud plan, sensors, and accessories while a live review panel stays in sync with every quantity and variant change.
 
-Currently, two official plugins are available:
+This is a frontend take-home: the Figma file is the visual source of truth, and the assignment spec is the functional source of truth.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech stack
 
-## React Compiler
+- React 19 + TypeScript
+- Vite
+- Tailwind CSS v4
+- Vitest + Testing Library
+- Client-side persistence via `localStorage`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+No global store, component library, or routing layer. The app is a single view with one domain hook.
 
-## Expanding the ESLint configuration
+## Architecture
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+src/
+  data/products.json      Catalog and seed quantities
+  types/bundle.ts         Domain types
+  utils/                  Pure pricing, selection, and persistence logic
+  hooks/useBundleState.ts Single source of truth for the bundle
+  components/ui/          Reusable primitives (Button, Typography, Price, …)
+  components/             Feature UI (accordion, cards, review)
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+**Data.** Products are declared in JSON. React renders capabilities (badge, variants, compare-at price, locked quantity) from the data. There is no product-specific JSX.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**State.** `useBundleState` owns selections, the active variant per product, and which accordion step is open. Builder and review both read that state. Totals, step counters, and checkout availability are derived.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Selections.** A line is `productId::variantId`. Switching White → Grey does not clear White’s quantity; the stepper then operates on Grey. The review panel lists every variant with quantity > 0 as its own row.
 
+**Pricing.** Money is integer cents inside `src/utils`. Currency strings are formatted only at the UI boundary (`Price`, `formatCents`).
+
+**Persistence.** “Save my system for later” writes selections and active variants to `localStorage`. Accordion open state is UI-only and is not persisted. Corrupt or unknown keys are skipped; a fully invalid payload falls back to the design seed.
+
+## Setup
+
+```bash
+npm install
+npm run dev
 ```
+
+Open the printed local URL (Vite defaults to `http://localhost:5173`).
+
+## Commands
+
+| Command             | Purpose                       |
+| ------------------- | ----------------------------- |
+| `npm run dev`       | Vite dev server               |
+| `npm run build`     | Typecheck + production bundle |
+| `npm run preview`   | Serve the production build    |
+| `npm run lint`      | ESLint                        |
+| `npm run test`      | Vitest (single run)           |
+| `npm run typecheck` | `tsc -b`                      |
+
+## Important decisions
+
+- **Tailwind, not CSS modules.** Design tokens live in `src/index.css` (`@theme`) so color, radius, and breakpoint values stay centralized. One-off Figma measurements use arbitrary values (`w-[65px]`, `max-w-[1213px]`).
+- **No Zustand/Redux.** A hook plus pure helpers is enough for this surface area and stays easy to test.
+- **Gilroy is not loaded from the web.** It is a licensed font. Inter is the delivered webfont, with Gilroy kept in the stack if it is installed locally.
+- **Desktop layout follows Figma, not a generic two-column dashboard.** At 1440px the builder is full width with a five-column product grid and the review panel underneath. Between 768px and 1439px the review column sits beside the steps and sticks. Phones stack builder then review.
+- **Checkout is a demo action.** There is no payment backend.
+
+## Tradeoffs
+
+- Product art is file-name driven. Missing assets fall back to a placeholder rather than blocking render.
+- The required Sense Hub is locked at its seeded quantity so it cannot be removed from a sensor bundle.
+- Persistence restores configuration, not which accordion step was open.
+
+## Intentionally not implemented
+
+- Payment processing / real checkout
+- A backend catalog or order API
+- Motion beyond the small hover/focus transitions in the design

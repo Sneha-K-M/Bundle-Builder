@@ -1,56 +1,75 @@
 import { PlaceholderProductIcon } from "../../icons/Icons";
 import QuantityStepper from "../QuantityStepper/QuantityStepper";
-import type { LineItem, QuantityHandler } from "../../types/bundle";
-import { productArtUrl } from "../../utils/assets";
-import { formatCurrency } from "../../utils/pricing";
-
-import styles from "./ReviewLineItem.module.css";
+import type { LineItem, QuantityChangeHandler } from "../../types/bundle";
+import { productArtUrl, variantArtUrl } from "../../utils/assets";
+import { cx } from "../../utils/cx";
+import AppImage from "../ui/AppImage/AppImage";
+import Price from "../ui/Price/Price";
 
 interface ReviewLineItemProps {
   item: LineItem;
-  onIncrement: QuantityHandler;
-  onDecrement: QuantityHandler;
+  onQuantityChange: QuantityChangeHandler;
 }
 
-export default function ReviewLineItem({ item, onIncrement, onDecrement }: ReviewLineItemProps) {
-  const { product, variant, quantity, lineTotal, lineOriginal, selectionType } = item;
-  const showStrike = lineOriginal > lineTotal;
+export default function ReviewLineItem({ item, onQuantityChange }: ReviewLineItemProps) {
+  const { product, variant, quantity, lineTotalCents, lineOriginalCents, selectionType } = item;
   const min = product.minQuantity ?? 0;
+  const locked = Boolean(product.locked);
   const isSingleSelect = selectionType === "single";
-  const artUrl = productArtUrl(product.image);
-
+  const artUrl = variantArtUrl(product.image, variant.id) ?? productArtUrl(product.image);
   const displayName =
-    variant && variant.label ? `${product.name} — ${variant.label}` : product.name;
+    variant.label != null && variant.label.length > 0
+      ? `${product.name} — ${variant.label}`
+      : product.name;
 
   return (
-    <div className={`${styles.row} ${isSingleSelect ? styles.rowNoStepper : ""}`}>
-      <div className={styles.thumb}>
-        {artUrl ? (
-          <img src={artUrl} alt="" className={`${styles.thumbIcon} ${styles.thumbImage}`} />
-        ) : (
-          <PlaceholderProductIcon label={product.name} className={styles.thumbIcon} />
-        )}
+    <div
+      className={cx(
+        "grid items-center gap-x-2.5 py-2.5",
+        isSingleSelect
+          ? "grid-cols-[36px_minmax(0,1fr)_auto]"
+          : "grid-cols-[36px_minmax(0,1fr)_auto_auto] max-xs:grid-cols-[36px_minmax(0,1fr)_auto] max-xs:[grid-template-areas:'thumb_name_price'_'thumb_stepper_price']"
+      )}
+    >
+      <div className={cx("h-9 w-9", !isSingleSelect && "max-xs:[grid-area:thumb]")}>
+        <AppImage
+          src={artUrl}
+          alt=""
+          decorative
+          className="h-full w-full"
+          fallback={<PlaceholderProductIcon label={product.name} className="h-full w-full" />}
+        />
       </div>
-      <div className={styles.name}>{displayName}</div>
-      <div className={styles.stepperSlot}>
-        {!isSingleSelect && (
+      <div
+        className={cx(
+          "text-[13px] font-semibold leading-snug text-ink",
+          !isSingleSelect && "max-xs:[grid-area:name]"
+        )}
+      >
+        {displayName}
+      </div>
+      {!isSingleSelect && (
+        <div className="justify-self-end max-xs:justify-self-start max-xs:[grid-area:stepper]">
           <QuantityStepper
             size="sm"
             quantity={quantity}
             min={min}
             label={displayName}
-            disabled={Boolean(product.locked && quantity <= min)}
-            onDecrement={() => onDecrement(product, variant?.id)}
-            onIncrement={() => onIncrement(product, variant?.id)}
+            decrementDisabled={locked}
+            incrementDisabled={locked}
+            onDecrement={() => onQuantityChange(product, variant.id, -1)}
+            onIncrement={() => onQuantityChange(product, variant.id, 1)}
           />
-        )}
-      </div>
-      <div className={styles.pricing}>
-        {showStrike && <span className={styles.strike}>{formatCurrency(lineOriginal)}</span>}
-        <span className={styles.price}>
-          {lineTotal === 0 ? "FREE" : formatCurrency(lineTotal)}
-          {product.billingSuffix ?? ""}
-        </span>
+        </div>
+      )}
+      <div className={cx(!isSingleSelect && "max-xs:[grid-area:price]")}>
+        <Price
+          amountCents={lineTotalCents}
+          compareAtCents={lineOriginalCents}
+          suffix={product.billingSuffix ?? ""}
+          tone="review"
+          layout="stack"
+        />
       </div>
     </div>
   );

@@ -1,109 +1,132 @@
 import { BadgeCheckIcon, TruckIcon } from "../../icons/Icons";
-import type { Catalog, QuantityHandler, SaveStatus, Selections } from "../../types/bundle";
+import type { BundleTotals, QuantityChangeHandler, SaveStatus } from "../../types/bundle";
 import { iconUrl } from "../../utils/assets";
-import { computeTotals, formatCurrency } from "../../utils/pricing";
+import { formatCents } from "../../utils/money";
+import AppImage from "../ui/AppImage/AppImage";
+import Button from "../ui/Button/Button";
+import Price from "../ui/Price/Price";
+import Typography from "../ui/Typography/Typography";
 import ReviewLineItem from "../ReviewLineItem/ReviewLineItem";
 
-import styles from "./ReviewPanel.module.css";
-
-const CATEGORY_ORDER = ["Cameras", "Sensors", "Accessories", "Plan"] as const;
-const SHIPPING_ORIGINAL = 5.99;
-
 interface ReviewPanelProps {
-  catalog: Catalog;
-  selections: Selections;
-  onIncrement: QuantityHandler;
-  onDecrement: QuantityHandler;
+  totals: BundleTotals;
+  categoryOrder: readonly string[];
+  onQuantityChange: QuantityChangeHandler;
   onSave: () => void;
+  onCheckout: () => void;
   saveStatus: SaveStatus;
+  canCheckout: boolean;
+  checkoutNotice: string | null;
 }
 
 export default function ReviewPanel({
-  catalog,
-  selections,
-  onIncrement,
-  onDecrement,
+  totals,
+  categoryOrder,
+  onQuantityChange,
   onSave,
+  onCheckout,
   saveStatus,
+  canCheckout,
+  checkoutNotice,
 }: ReviewPanelProps) {
-  const { lineItemsByCategory, subtotal, originalSubtotal, savings, financingPerMonth } =
-    computeTotals(selections, catalog);
+  const {
+    lineItemsByCategory,
+    totalCents,
+    originalTotalCents,
+    savingsCents,
+    financingPerMonthCents,
+    shippingOriginalCents,
+  } = totals;
 
-  const total = subtotal;
-  const originalTotal = originalSubtotal + SHIPPING_ORIGINAL;
   const hasAnyItems = Object.values(lineItemsByCategory).some((list) => list.length > 0);
-
   const saveLabel = saveStatus === "saved" ? "Saved!" : "Save my system for later";
   const shippingIconUrl = iconUrl("truck");
   const guaranteeIconUrl = iconUrl("badge-check");
 
   return (
-    <section className={styles.panel} aria-label="Your security system review">
-      <div className={styles.inner}>
-        <div className={styles.summary}>
-          <p className={styles.eyebrow}>REVIEW</p>
-          <h2 className={styles.heading}>Your security system</h2>
-          <p className={styles.subheading}>
+    <section
+      className="mt-10 rounded-lg bg-panel p-12 max-xl:sticky max-xl:top-5 max-xl:mt-0 max-xl:p-6 max-md:static max-md:mt-8 max-md:rounded-none max-md:px-[15px] max-md:py-6"
+      aria-label="Your security system review"
+    >
+      <div className="grid grid-cols-1 items-start gap-12 max-xl:gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+        <div className="min-w-0">
+          <Typography variant="eyebrow" className="mb-1.5 hidden max-xl:block">
+            REVIEW
+          </Typography>
+          <Typography variant="display" as="h2" className="mb-2">
+            Your security system
+          </Typography>
+          <Typography variant="subheading">
             Review your personalized protection system designed to keep what matters most safe.
-          </p>
+          </Typography>
 
-          <div className={styles.divider} />
+          <div className="my-4 h-px bg-divider" />
 
           {hasAnyItems ? (
-            CATEGORY_ORDER.filter((cat) => lineItemsByCategory[cat]?.length).map((category) => (
-              <div key={category} className={styles.section}>
-                <p className={styles.sectionLabel}>{category.toUpperCase()}</p>
-                {lineItemsByCategory[category].map((item) => (
-                  <ReviewLineItem
-                    key={item.key}
-                    item={item}
-                    onIncrement={onIncrement}
-                    onDecrement={onDecrement}
-                  />
+            <div className="flex flex-col gap-1">
+              {categoryOrder
+                .filter((category) => lineItemsByCategory[category]?.length)
+                .map((category) => (
+                  <div key={category}>
+                    <Typography variant="label">{category}</Typography>
+                    {lineItemsByCategory[category].map((item) => (
+                      <ReviewLineItem
+                        key={item.key}
+                        item={item}
+                        onQuantityChange={onQuantityChange}
+                      />
+                    ))}
+                  </div>
                 ))}
-              </div>
-            ))
+            </div>
           ) : (
-            <p className={styles.emptyState}>
+            <p className="text-[13px] leading-normal text-muted">
               Nothing selected yet — choose cameras, sensors, and accessories to build your system.
             </p>
           )}
 
-          <div className={styles.utilityRow}>
+          <div className="flex items-center gap-2.5 pt-1.5">
             <div
-              className={`${styles.utilityIcon} ${shippingIconUrl ? styles.utilityIconArt : ""}`}
+              className={
+                shippingIconUrl
+                  ? "flex h-8 w-8 shrink-0 items-center justify-center"
+                  : "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ship"
+              }
             >
               {shippingIconUrl ? (
-                <img src={shippingIconUrl} alt="" className={styles.iconArt} />
+                <AppImage src={shippingIconUrl} alt="" decorative className="h-full w-full object-contain" />
               ) : (
-                <TruckIcon className={styles.icon} />
+                <TruckIcon className="h-[17px] w-[17px] text-success" />
               )}
             </div>
-            <div className={styles.utilityLabel}>Fast Shipping</div>
-            <div className={styles.pricing}>
-              <span className={styles.strike}>{formatCurrency(SHIPPING_ORIGINAL)}</span>
-              <span className={styles.freePrice}>FREE</span>
-            </div>
+            <div className="flex-1 text-[13.5px] font-semibold text-ink">Fast Shipping</div>
+            <Price
+              amountCents={0}
+              compareAtCents={shippingOriginalCents}
+              tone="review"
+            />
           </div>
         </div>
 
-        <div className={styles.order}>
-          <div className={styles.guaranteeRow}>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-5 max-xs:gap-3.5">
             <div
-              className={`${styles.guaranteeBadge} ${
-                guaranteeIconUrl ? styles.guaranteeBadgeArt : ""
-              }`}
+              className={
+                guaranteeIconUrl
+                  ? "h-[78px] w-[78px] shrink-0"
+                  : "flex h-[76px] w-[76px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-full bg-accent-soft text-center"
+              }
             >
               {guaranteeIconUrl ? (
-                <img
+                <AppImage
                   src={guaranteeIconUrl}
                   alt="100% Wyze satisfaction guarantee. Try worry-free for 30 days."
-                  className={styles.guaranteeSeal}
+                  className="h-full w-full object-contain"
                 />
               ) : (
                 <>
-                  <BadgeCheckIcon className={styles.guaranteeIcon} />
-                  <span className={styles.guaranteeText}>
+                  <BadgeCheckIcon className="h-5 w-5 text-accent" />
+                  <span className="text-[8.5px] font-bold leading-tight text-accent uppercase">
                     100%
                     <br />
                     satisfaction
@@ -113,44 +136,60 @@ export default function ReviewPanel({
                 </>
               )}
             </div>
-            <div className={styles.returns}>
-              <h3 className={styles.returnsTitle}>30-day hassle-free returns</h3>
-              <p className={styles.returnsCopy}>
+            <div className="min-w-0 flex-[1_1_240px] max-xl:hidden">
+              <Typography variant="title" as="h3" className="mb-1.5">
+                30-day hassle-free returns
+              </Typography>
+              <Typography variant="subheading">
                 If you&rsquo;re not totally in love with the product, we will refund you 100%.
-              </p>
+              </Typography>
             </div>
 
-            <div className={styles.totalRow}>
-              <span className={styles.financingPill}>
-                as low as {formatCurrency(financingPerMonth)}/mo
+            <div className="mt-6 flex w-full flex-[1_1_100%] items-baseline justify-between gap-4 max-xl:mt-0 max-xl:flex-1 max-xl:flex-col max-xl:items-end max-xl:gap-1.5" aria-live="polite" aria-atomic="true">
+              <span className="rounded-pill bg-accent px-2.5 py-1 text-[10.5px] font-bold whitespace-nowrap text-white">
+                as low as {formatCents(financingPerMonthCents)}/mo
               </span>
-              <div className={styles.totalBlock}>
-                {originalTotal > total && (
-                  <span className={styles.totalStrike}>{formatCurrency(originalTotal)}</span>
-                )}
-                <span className={styles.total}>{formatCurrency(total)}</span>
-              </div>
+              <Price
+                amountCents={totalCents}
+                compareAtCents={originalTotalCents}
+                tone="total"
+              />
             </div>
           </div>
 
-          {savings > 0 && (
-            <p className={styles.savings}>
-              Congrats! You&rsquo;re saving {formatCurrency(savings)} on your security bundle!
+          {savingsCents > 0 && (
+            <p className="mt-2.5 mb-0 text-center text-[12.5px] font-semibold text-success">
+              Congrats! You&rsquo;re saving {formatCents(savingsCents)} on your security bundle!
             </p>
           )}
 
-          <button type="button" className={styles.checkoutBtn}>
+          <Button
+            variant="primary"
+            fullWidth
+            className="mt-3"
+            onClick={onCheckout}
+            disabled={!canCheckout}
+          >
             Checkout
-          </button>
+          </Button>
 
-          <button type="button" className={styles.saveLink} onClick={onSave}>
+          <Button variant="link" className="mx-auto mt-3 block w-fit" onClick={onSave}>
             {saveLabel}
-          </button>
+          </Button>
           {saveStatus === "restored" && (
-            <p className={styles.restoredNote}>Restored your saved system.</p>
+            <p className="mt-1 mb-0 text-center text-[11.5px] text-success">
+              Restored your saved system.
+            </p>
           )}
           {saveStatus === "error" && (
-            <p className={styles.errorNote}>Couldn&rsquo;t save right now. Try again.</p>
+            <p className="mt-1 mb-0 text-center text-[11.5px] text-danger">
+              Couldn&rsquo;t save right now. Try again.
+            </p>
+          )}
+          {checkoutNotice && (
+            <p className="mt-1 mb-0 text-center text-[11.5px] text-muted" role="status">
+              {checkoutNotice}
+            </p>
           )}
         </div>
       </div>

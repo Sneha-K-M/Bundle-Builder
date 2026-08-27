@@ -1,51 +1,41 @@
+import { useState } from "react";
 import AccordionStep from "./components/Accordion/AccordionStep";
 import ReviewPanel from "./components/ReviewPanel/ReviewPanel";
 import { useBundleState } from "./hooks/useBundleState";
-import type { Product, Step } from "./types/bundle";
-import styles from "./App.module.css";
+import type { Product } from "./types/bundle";
 
 export default function App() {
   const {
     steps,
-    catalog,
+    reviewCategoryOrder,
     selections,
     activeVariants,
     openStepId,
     saveStatus,
+    totals,
+    canCheckout,
     incrementQuantity,
     setActiveVariant,
+    selectExclusive,
     toggleStep,
     goToStep,
     persistBundle,
   } = useBundleState();
 
-  const handleSelectVariant = (productId: string, variantId: string) => {
-    setActiveVariant(productId, variantId);
-  };
+  const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null);
 
-  const handleIncrement = (product: Product, variantId?: string) => {
-    incrementQuantity(product.id, variantId ?? "base", 1, { min: product.minQuantity ?? 0 });
-  };
-
-  const handleDecrement = (product: Product, variantId?: string) => {
-    incrementQuantity(product.id, variantId ?? "base", -1, { min: product.minQuantity ?? 0 });
-  };
-
-  const handleToggleSingle = (product: Product, variantId: string | undefined, step: Step) => {
-    for (const sibling of step.products) {
-      if (sibling.id !== product.id) {
-        incrementQuantity(sibling.id, "base", Number.NEGATIVE_INFINITY, { min: 0 });
-      }
-    }
-    incrementQuantity(product.id, variantId ?? "base", 1, { min: 0 });
+  const handleQuantityChange = (product: Product, variantId: string, delta: number) => {
+    incrementQuantity(product.id, variantId, delta);
   };
 
   return (
-    <div className={styles.page}>
-      <h1 className={styles.pageTitle}>Let&rsquo;s get started!</h1>
+    <div className="min-h-screen bg-white px-6 pt-8 pb-16 max-md:px-0 max-md:pt-5 max-md:pb-12 max-xs:pt-3 max-xs:pb-10">
+      <h1 className="mx-0 mt-1 mb-4 text-center text-[26px] font-extrabold tracking-tight text-ink md:sr-only">
+        Let&rsquo;s get started!
+      </h1>
 
-      <div className={styles.container}>
-        <main className={styles.builder}>
+      <div className="mx-auto max-w-[1213px] md:max-xl:grid md:max-xl:max-w-[1156px] md:max-xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] md:max-xl:items-start md:max-xl:gap-6">
+        <main className="flex min-w-0 flex-col gap-[13px]">
           {steps.map((step, index) => (
             <AccordionStep
               key={step.id}
@@ -56,23 +46,31 @@ export default function App() {
               onToggle={() => toggleStep(step.id)}
               onNext={() => {
                 const next = steps[index + 1];
-                if (next) goToStep(next.id);
+                if (!next) return;
+                goToStep(next.id);
+                requestAnimationFrame(() => {
+                  document.getElementById(`step-header-${next.id}`)?.focus();
+                });
               }}
-              onSelectVariant={handleSelectVariant}
-              onIncrement={handleIncrement}
-              onDecrement={handleDecrement}
-              onToggleSingle={(product, variantId) => handleToggleSingle(product, variantId, step)}
+              onSelectVariant={setActiveVariant}
+              onQuantityChange={handleQuantityChange}
+              onSelectExclusive={selectExclusive}
             />
           ))}
         </main>
 
         <ReviewPanel
-          catalog={catalog}
-          selections={selections}
-          onIncrement={handleIncrement}
-          onDecrement={handleDecrement}
+          totals={totals}
+          categoryOrder={reviewCategoryOrder}
+          onQuantityChange={handleQuantityChange}
           onSave={persistBundle}
+          onCheckout={() => {
+            if (!canCheckout) return;
+            setCheckoutNotice("Demo only — checkout is not connected to a payment provider.");
+          }}
           saveStatus={saveStatus}
+          canCheckout={canCheckout}
+          checkoutNotice={checkoutNotice}
         />
       </div>
     </div>

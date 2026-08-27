@@ -6,6 +6,10 @@ export type SelectionType = "multi" | "single";
 
 export type SaveStatus = "idle" | "saved" | "error" | "restored";
 
+export const BASE_VARIANT_ID = "base";
+
+export const STEP_IDS: readonly StepId[] = ["cameras", "plan", "sensors", "accessories"];
+
 export interface ProductVariant {
   id: string;
   label: string | null;
@@ -41,9 +45,11 @@ export interface Step {
 }
 
 export interface ProductsData {
+  reviewCategoryOrder: string[];
   steps: Step[];
 }
 
+/** Unique identity for a selected line: `productId::variantId`. */
 export type LineKey = string;
 
 export type Selections = Map<LineKey, number>;
@@ -63,33 +69,41 @@ export interface LineItem {
   product: Product;
   variant: ProductVariant;
   quantity: number;
-  unitPrice: number;
-  unitOriginal: number;
-  lineTotal: number;
-  lineOriginal: number;
+  unitPriceCents: number;
+  unitOriginalCents: number;
+  lineTotalCents: number;
+  lineOriginalCents: number;
   selectionType: SelectionType;
 }
 
 export interface BundleTotals {
-  subtotal: number;
-  originalSubtotal: number;
-  savings: number;
-  financingPerMonth: number;
+  subtotalCents: number;
+  originalSubtotalCents: number;
+  shippingCents: number;
+  shippingOriginalCents: number;
+  totalCents: number;
+  originalTotalCents: number;
+  savingsCents: number;
+  financingPerMonthCents: number;
   lineItemsByCategory: Record<string, LineItem[]>;
 }
 
 export interface SavedBundle {
   selections: Selections;
   activeVariants: ActiveVariants;
-  openStepId: StepId | null;
   savedAt: string | null;
 }
 
-export interface QuantityOptions {
-  min?: number;
-  product?: Product;
-}
-
-export type QuantityHandler = (product: Product, variantId?: string) => void;
+export type QuantityChangeHandler = (
+  product: Product,
+  variantId: string,
+  delta: number
+) => void;
 
 export type VariantSelectHandler = (productId: string, variantId: string) => void;
+
+export type ExclusiveSelectHandler = (
+  product: Product,
+  step: Step,
+  variantId?: string
+) => void;

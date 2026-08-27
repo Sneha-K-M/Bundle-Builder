@@ -1,95 +1,79 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { productsData } from "../data/catalog";
-import type {
-  ActiveVariants,
-  QuantityOptions,
-  SaveStatus,
-  Selections,
-  StepId,
-} from "../types/bundle";
-import { buildCatalog, lineKey } from "../utils/pricing";
-import { clearSavedBundle, loadSavedBundle, saveBundle } from "./usePersistedBundle";
+import type { ExclusiveSelectHandler, SaveStatus, Selections, StepId } from "../types/bundle";
+import { loadSavedBundle, saveBundle } from "../utils/persistence";
+import { buildCatalog, computeTotals, hasAnySelection } from "../utils/pricing";
+import {
+  adjustLineQuantity,
+  buildSeedState,
+  selectExclusiveProduct,
+  setActiveVariantMap,
+} from "../utils/selections";
 
-function buildSeedState(): { selections: Selections; activeVariants: ActiveVariants } {
-  const selections: Selections = new Map();
-  const activeVariants: ActiveVariants = new Map();
+const SAVE_FEEDBACK_MS = 2400;
 
-  for (const step of productsData.steps) {
-    for (const product of step.products) {
-      const seed = product.seedQuantities ?? {};
-      for (const [variantId, qty] of Object.entries(seed)) {
-        selections.set(lineKey(product.id, variantId), qty);
-      }
-      const firstSeededVariant = Object.keys(seed)[0];
-      activeVariants.set(product.id, firstSeededVariant ?? product.defaultVariant ?? "base");
-    }
+function getInitialState(catalog: ReturnType<typeof buildCatalog>["catalog"]) {
+  const seed = buildSeedState(productsData.steps);
+  const saved = loadSavedBundle(catalog);
+  if (!saved) {
+    return {
+      selections: seed.selections,
+      activeVariants: seed.activeVariants,
+      saveStatus: "idle" as SaveStatus,
+    };
   }
-
-  return { selections, activeVariants };
+  return {
+    selections: saved.selections,
+    activeVariants: saved.activeVariants.size ? saved.activeVariants : seed.activeVariants,
+    saveStatus: "restored" as SaveStatus,
+  };
 }
 
 export function useBundleState() {
-  const { catalog, stepByProductId } = useMemo(() => buildCatalog(productsData), []);
+  const { catalog, productById } = useMemo(() => buildCatalog(productsData), []);
+  const initial = useMemo(() => getInitialState(catalog), [catalog]);
 
-  const [selections, setSelections] = useState<Selections>(() => {
-    const saved = loadSavedBundle();
-    if (saved) return saved.selections;
-    return buildSeedState().selections;
-  });
-
-  const [activeVariants, setActiveVariants] = useState<ActiveVariants>(() => {
-    const saved = loadSavedBundle();
-    if (saved && saved.activeVariants.size) return saved.activeVariants;
-    return buildSeedState().activeVariants;
-  });
-
-  const [openStepId, setOpenStepId] = useState<StepId | null>(() => {
-    const saved = loadSavedBundle();
-    return saved?.openStepId ?? productsData.steps[0].id;
-  });
-
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>(
-    loadSavedBundle() ? "restored" : "idle"
+  const [selections, setSelections] = useState<Selections>(initial.selections);
+  const [activeVariants, setActiveVariants] = useState(initial.activeVariants);
+  const [openStepId, setOpenStepId] = useState<StepId | null>(
+    productsData.steps[0]?.id ?? "cameras"
   );
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>(initial.saveStatus);
+  const saveTimer = useRef<number | null>(null);
 
-  const setQuantity = useCallback(
-    (productId: string, variantId: string, quantity: number, options: QuantityOptions = {}) => {
-      const product = [...stepByProductId.values()]
-        .flatMap((s) => s.products)
-        .find((p) => p.id === productId);
-      const min = options.min ?? product?.minQuantity ?? 0;
-      const safeQty = Math.max(min, quantity);
+  useEffect(() => {
+    if (initial.saveStatus !== "restored") return;
+    const id = window.setTimeout(() => setSaveStatus("idle"), SAVE_FEEDBACK_MS);
+    return () => window.clearTimeout(id);
+  }, [initial.saveStatus]);
 
-      setSelections((prev) => {
-        const next = new Map(prev);
-        next.set(lineKey(productId, variantId), safeQty);
-        return next;
-      });
-    },
-    [stepByProductId]
-  );
+  useEffect(() => {
+    return () => {
+      if (saveTimer.current !== null) window.clearTimeout(saveTimer.current);
+    };
+  }, []);
 
   const incrementQuantity = useCallback(
-    (productId: string, variantId: string, delta: number, options: QuantityOptions = {}) => {
-      setSelections((prev) => {
-        const key = lineKey(productId, variantId);
-        const current = prev.get(key) ?? 0;
-        const min = options.min ?? options.product?.minQuantity ?? 0;
-        const next = new Map(prev);
-        next.set(key, Math.max(min, current + delta));
-        return next;
-      });
+    (productId: string, variantId: string, delta: number) => {
+      setSelections((prev) =>
+        adjustLineQuantity(prev, productById.get(productId), productId, variantId, delta)
+      );
     },
-    []
+    [productById]
   );
 
   const setActiveVariant = useCallback((productId: string, variantId: string) => {
-    setActiveVariants((prev) => {
-      const next = new Map(prev);
-      next.set(productId, variantId);
-      return next;
-    });
+    setActiveVariants((prev) => setActiveVariantMap(prev, productId, variantId));
   }, []);
+
+  const selectExclusive = useCallback<ExclusiveSelectHandler>(
+    (product, step, variantId) => {
+      const fullProduct = productById.get(product.id);
+      if (!fullProduct) return;
+      setSelections((prev) => selectExclusiveProduct(prev, step, fullProduct, variantId));
+    },
+    [productById]
+  );
 
   const toggleStep = useCallback((stepId: StepId) => {
     setOpenStepId((prev) => (prev === stepId ? null : stepId));
@@ -100,35 +84,33 @@ export function useBundleState() {
   }, []);
 
   const persistBundle = useCallback(() => {
-    const ok = saveBundle({ selections, activeVariants, openStepId });
+    const ok = saveBundle({ selections, activeVariants });
     setSaveStatus(ok ? "saved" : "error");
+    if (saveTimer.current !== null) window.clearTimeout(saveTimer.current);
     if (ok) {
-      window.setTimeout(() => setSaveStatus("idle"), 2400);
+      saveTimer.current = window.setTimeout(() => setSaveStatus("idle"), SAVE_FEEDBACK_MS);
     }
-  }, [selections, activeVariants, openStepId]);
+  }, [selections, activeVariants]);
 
-  const resetBundle = useCallback(() => {
-    clearSavedBundle();
-    const seed = buildSeedState();
-    setSelections(seed.selections);
-    setActiveVariants(seed.activeVariants);
-    setOpenStepId(productsData.steps[0].id);
-    setSaveStatus("idle");
-  }, []);
+  const totals = useMemo(
+    () => computeTotals(selections, catalog, productsData.reviewCategoryOrder),
+    [selections, catalog]
+  );
 
   return {
     steps: productsData.steps,
-    catalog,
+    reviewCategoryOrder: productsData.reviewCategoryOrder,
     selections,
     activeVariants,
     openStepId,
     saveStatus,
-    setQuantity,
+    totals,
+    canCheckout: hasAnySelection(selections),
     incrementQuantity,
     setActiveVariant,
+    selectExclusive,
     toggleStep,
     goToStep,
     persistBundle,
-    resetBundle,
   };
 }
