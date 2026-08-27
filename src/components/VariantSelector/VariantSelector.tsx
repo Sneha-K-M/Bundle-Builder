@@ -1,6 +1,6 @@
 import type { ProductVariant } from "../../types/bundle";
 import { variantArtUrl } from "../../utils/assets";
-import styles from "./VariantSelector.module.css";
+import { cx } from "../../utils/cx";
 
 interface VariantSelectorProps {
   imageKey: string;
@@ -18,25 +18,35 @@ export default function VariantSelector({
   if (!variants.length) return null;
 
   return (
-    <div className={styles.row} role="radiogroup" aria-label="Color">
+    <div className="flex flex-wrap gap-[3px]" role="radiogroup" aria-label="Color">
       {variants.map((variant) => {
         const active = variant.id === activeVariantId;
         const artUrl = variantArtUrl(imageKey, variant.id);
+        const label = variant.label ?? variant.id;
         return (
           <button
             key={variant.id}
             type="button"
             role="radio"
             aria-checked={active}
-            className={`${styles.chip} ${active ? styles.active : ""}`}
+            aria-label={label}
+            className={cx(
+              "inline-flex h-[26px] flex-[0_1_65px] items-center justify-center gap-[3px] rounded-[2px] border-[0.5px] px-[3px] py-px text-[10px] font-normal tracking-[0.6px] leading-none transition-colors",
+              active
+                ? "border-variant bg-variant-bg text-ink"
+                : "border-line-strong bg-white text-muted"
+            )}
             onClick={() => onSelect(variant.id)}
           >
             {artUrl ? (
-              <img src={artUrl} alt="" className={styles.chipImage} />
+              <img src={artUrl} alt="" className="h-full w-auto shrink-0 rounded-[5px] object-contain aspect-square" />
             ) : (
-              <span className={styles.swatch} style={{ background: variant.swatch }} />
+              <span
+                className="h-4 w-4 shrink-0 rounded-full border border-black/12"
+                style={{ background: variant.swatch }}
+              />
             )}
-            <span className={styles.label}>{variant.label}</span>
+            <span className="shrink-0 whitespace-nowrap">{variant.label}</span>
           </button>
         );
       })}

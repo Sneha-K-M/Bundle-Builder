@@ -1,56 +1,102 @@
 import { PlaceholderProductIcon } from "../../icons/Icons";
 import QuantityStepper from "../QuantityStepper/QuantityStepper";
-import type { LineItem, QuantityHandler } from "../../types/bundle";
-import { productArtUrl } from "../../utils/assets";
-import { formatCurrency } from "../../utils/pricing";
-
-import styles from "./ReviewLineItem.module.css";
+import type { LineItem, QuantityChangeHandler } from "../../types/bundle";
+import { productArtUrl, variantArtUrl } from "../../utils/assets";
+import { cx } from "../../utils/cx";
+import AppImage from "../ui/AppImage/AppImage";
+import Price from "../ui/Price/Price";
 
 interface ReviewLineItemProps {
   item: LineItem;
-  onIncrement: QuantityHandler;
-  onDecrement: QuantityHandler;
+  showVariant: boolean;
+  onQuantityChange: QuantityChangeHandler;
 }
 
-export default function ReviewLineItem({ item, onIncrement, onDecrement }: ReviewLineItemProps) {
-  const { product, variant, quantity, lineTotal, lineOriginal, selectionType } = item;
-  const showStrike = lineOriginal > lineTotal;
-  const min = product.minQuantity ?? 0;
-  const isSingleSelect = selectionType === "single";
-  const artUrl = productArtUrl(product.image);
+export function reviewDisplayName(item: LineItem, showVariant: boolean): string {
+  if (showVariant && item.variant.label) {
+    return `${item.product.name} — ${item.variant.label}`;
+  }
+  return item.product.name;
+}
 
-  const displayName =
-    variant && variant.label ? `${product.name} — ${variant.label}` : product.name;
+function AccentName({ name, accent }: { name: string; accent?: string }) {
+  if (!accent || !name.includes(accent)) return name;
+  const index = name.indexOf(accent);
+  return (
+    <>
+      {name.slice(0, index)}
+      <span className="text-accent">{accent}</span>
+      {name.slice(index + accent.length)}
+    </>
+  );
+}
+
+export default function ReviewLineItem({
+  item,
+  showVariant,
+  onQuantityChange,
+}: ReviewLineItemProps) {
+  const { product, variant, quantity, lineTotalCents, lineOriginalCents, selectionType } = item;
+  const min = product.minQuantity ?? 0;
+  const locked = Boolean(product.locked);
+  const isSingleSelect = selectionType === "single";
+  const artUrl = variantArtUrl(product.image, variant.id) ?? productArtUrl(product.image);
+  const displayName = reviewDisplayName(item, showVariant);
 
   return (
-    <div className={`${styles.row} ${isSingleSelect ? styles.rowNoStepper : ""}`}>
-      <div className={styles.thumb}>
-        {artUrl ? (
-          <img src={artUrl} alt="" className={`${styles.thumbIcon} ${styles.thumbImage}`} />
-        ) : (
-          <PlaceholderProductIcon label={product.name} className={styles.thumbIcon} />
+    <div
+      className={cx(
+        "grid items-center gap-x-2.5 py-2",
+        isSingleSelect
+          ? "-mx-8 grid-cols-[28px_minmax(0,1fr)_auto] px-8 py-3 max-xl:-mx-6 max-xl:px-6 max-md:-mx-[15px] max-md:px-[15px]"
+          : "grid-cols-[40px_minmax(0,1fr)_auto_auto] max-xs:grid-cols-[40px_minmax(0,1fr)_auto] max-xs:[grid-template-areas:'thumb_name_price'_'thumb_stepper_price']"
+      )}
+    >
+      <div
+        className={cx(
+          "flex shrink-0 items-center justify-center overflow-hidden",
+          isSingleSelect ? "h-[31px] w-[26px]" : "h-10 w-10 rounded-[5px] border border-line bg-white",
+          !isSingleSelect && "max-xs:[grid-area:thumb]"
         )}
+      >
+        <AppImage
+          src={artUrl}
+          alt=""
+          decorative
+          className="h-full w-full object-contain"
+          fallback={<PlaceholderProductIcon label={product.name} className="h-8 w-8" />}
+        />
       </div>
-      <div className={styles.name}>{displayName}</div>
-      <div className={styles.stepperSlot}>
-        {!isSingleSelect && (
+      <div
+        className={cx(
+          "text-[13px] font-semibold leading-snug text-ink",
+          !isSingleSelect && "max-xs:[grid-area:name]"
+        )}
+      >
+        <AccentName name={displayName} accent={product.nameAccent} />
+      </div>
+      {!isSingleSelect && (
+        <div className="justify-self-end max-xs:justify-self-start max-xs:[grid-area:stepper]">
           <QuantityStepper
             size="sm"
             quantity={quantity}
             min={min}
-            label={displayName}
-            disabled={Boolean(product.locked && quantity <= min)}
-            onDecrement={() => onDecrement(product, variant?.id)}
-            onIncrement={() => onIncrement(product, variant?.id)}
+            label={`${displayName} in review`}
+            decrementDisabled={locked}
+            incrementDisabled={locked}
+            onDecrement={() => onQuantityChange(product, variant.id, -1)}
+            onIncrement={() => onQuantityChange(product, variant.id, 1)}
           />
-        )}
-      </div>
-      <div className={styles.pricing}>
-        {showStrike && <span className={styles.strike}>{formatCurrency(lineOriginal)}</span>}
-        <span className={styles.price}>
-          {lineTotal === 0 ? "FREE" : formatCurrency(lineTotal)}
-          {product.billingSuffix ?? ""}
-        </span>
+        </div>
+      )}
+      <div className={cx(!isSingleSelect && "max-xs:[grid-area:price]")}>
+        <Price
+          amountCents={lineTotalCents}
+          compareAtCents={lineOriginalCents}
+          suffix={product.billingSuffix ?? ""}
+          tone="review"
+          layout="stack"
+        />
       </div>
     </div>
   );

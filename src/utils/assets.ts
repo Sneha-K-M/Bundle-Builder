@@ -9,7 +9,7 @@ function byFileName(modules: Record<string, unknown>): AssetMap {
   const assets: AssetMap = {};
   for (const [path, url] of Object.entries(modules)) {
     const fileName = path
-      .split("/")
+      .split(/[/\\]/)
       .pop()
       ?.replace(/\.(svg|png|jpe?g|webp|avif)$/i, "");
     if (fileName && typeof url === "string") {

@@ -1,68 +1,126 @@
 import { PlaceholderProductIcon } from "../../icons/Icons";
-import type { Product, QuantityHandler, SelectionType, Selections, VariantSelectHandler } from "../../types/bundle";
-import { productArtUrl } from "../../utils/assets";
-import { formatCurrency, lineKey } from "../../utils/pricing";
+import type {
+  ActiveVariants,
+  ExclusiveSelectHandler,
+  Product,
+  QuantityChangeHandler,
+  SelectionType,
+  Selections,
+  Step,
+  VariantSelectHandler,
+} from "../../types/bundle";
+import { productArtUrl, variantArtUrl } from "../../utils/assets";
+import { cx } from "../../utils/cx";
+import { lineKey } from "../../utils/line";
+import { dollarsToCents } from "../../utils/money";
+import { activeVariantFor, productHasSelection } from "../../utils/selections";
+import Badge from "../ui/Badge/Badge";
+import AppImage from "../ui/AppImage/AppImage";
+import Button from "../ui/Button/Button";
+import Price from "../ui/Price/Price";
+import Typography from "../ui/Typography/Typography";
 import QuantityStepper from "../QuantityStepper/QuantityStepper";
-import styles from "./ProductCard.module.css";
 import VariantSelector from "../VariantSelector/VariantSelector";
-
 
 interface ProductCardProps {
   product: Product;
+  step: Step;
   selections: Selections;
-  activeVariantId?: string;
+  activeVariants: ActiveVariants;
   onSelectVariant: VariantSelectHandler;
-  onIncrement: QuantityHandler;
-  onDecrement: QuantityHandler;
-  onToggleSingle: QuantityHandler;
+  onQuantityChange: QuantityChangeHandler;
+  onSelectExclusive: ExclusiveSelectHandler;
   selectionType?: SelectionType;
 }
 
 export default function ProductCard({
   product,
+  step,
   selections,
-  activeVariantId,
+  activeVariants,
   onSelectVariant,
-  onIncrement,
-  onDecrement,
-  onToggleSingle,
+  onQuantityChange,
+  onSelectExclusive,
   selectionType = "multi",
 }: ProductCardProps) {
   const hasVariants = product.variants.length > 0;
-  const effectiveVariantId = hasVariants ? activeVariantId ?? product.defaultVariant ?? "base" : "base";
+  const effectiveVariantId = activeVariantFor(product, activeVariants);
   const quantity = selections.get(lineKey(product.id, effectiveVariantId)) ?? 0;
-  const isSelected = quantity > 0;
+  const isSelected = productHasSelection(product, selections);
   const min = product.minQuantity ?? 0;
-  const artUrl = productArtUrl(product.image);
+  const locked = Boolean(product.locked);
+  const artUrl =
+    variantArtUrl(product.image, effectiveVariantId) ?? productArtUrl(product.image);
 
   return (
-    <div className={`${styles.card} ${isSelected ? styles.selected : ""}`}>
-      <div className={styles.media}>
-        {product.badge && <span className={styles.badge}>{product.badge}</span>}
-        <div className={styles.mediaFrame}>
-          {artUrl ? (
-            <img
-              src={artUrl}
-              alt={product.name}
-              className={`${styles.mediaIcon} ${styles.mediaImage}`}
-            />
-          ) : (
-            <PlaceholderProductIcon label={product.name} className={styles.mediaIcon} />
+    <article
+      className={cx(
+        "flex h-full w-full flex-col gap-2.5 rounded-[10px] border-2 bg-card p-[11px] shadow-card transition-colors",
+        isSelected ? "border-selected" : "border-line hover:border-card-hover",
+        "md:max-xl:min-h-[159px] md:max-xl:flex-row md:max-xl:gap-[19px]",
+        "xl:min-h-0 xl:flex-col xl:gap-2.5",
+        "@max-[220px]:min-h-0 @max-[220px]:flex-col @max-[220px]:gap-2.5"
+      )}
+    >
+      <div
+        className={cx(
+          "relative w-full shrink-0",
+          "md:max-xl:w-[101px]",
+          "xl:w-full",
+          "@max-[220px]:w-full"
+        )}
+      >
+        {product.badge && <Badge>{product.badge}</Badge>}
+        <div
+          className={cx(
+            "flex aspect-[202.6/117.394] w-full items-center justify-center overflow-hidden rounded-[5px]",
+            "md:max-xl:h-[137px] md:max-xl:w-[101px] md:max-xl:aspect-auto",
+            "xl:h-auto xl:w-full xl:aspect-[202.6/117.394]",
+            "max-md:h-[137px] max-md:aspect-auto",
+            "@max-[220px]:h-auto @max-[220px]:w-full @max-[220px]:aspect-[202.6/117.394]"
           )}
+        >
+          <AppImage
+            src={artUrl}
+            alt={product.name}
+            className="h-full w-full rounded-[5px]"
+            fallback={<PlaceholderProductIcon label={product.name} className="h-full w-full rounded-[5px]" />}
+          />
         </div>
       </div>
 
-      <div className={styles.content}>
-        <div className={styles.info}>
-          <h3 className={styles.title}>{product.name}</h3>
-          <p className={styles.description}>
+      <div
+        className={cx(
+          "flex min-w-0 flex-1 flex-col justify-between gap-2",
+          "md:max-xl:justify-start md:max-xl:gap-0",
+          "xl:justify-between xl:gap-2",
+          "@max-[220px]:justify-between @max-[220px]:gap-2"
+        )}
+      >
+        <div
+          className={cx(
+            "flex flex-col gap-2",
+            "md:max-xl:flex-1 md:max-xl:justify-center",
+            "xl:flex-none xl:justify-start",
+            "@max-[220px]:flex-none @max-[220px]:justify-start"
+          )}
+        >
+          <Typography variant="title" as="h3">
+            {product.name}
+          </Typography>
+          <Typography variant="body">
             {product.description}{" "}
             {product.learnMoreUrl && (
-              <a href={product.learnMoreUrl} className={styles.learnMore}>
+              <a
+                href={product.learnMoreUrl}
+                className="font-medium whitespace-nowrap text-accent underline"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Learn More
               </a>
             )}
-          </p>
+          </Typography>
 
           {hasVariants && (
             <VariantSelector
@@ -74,37 +132,45 @@ export default function ProductCard({
           )}
         </div>
 
-        <div className={styles.footer}>
+        <div
+          className={cx(
+            "flex flex-wrap items-center justify-between gap-2 pt-1",
+            "md:max-xl:flex-nowrap md:max-xl:items-end md:max-xl:gap-3 md:max-xl:pt-2.5",
+            "xl:flex-wrap xl:items-center xl:gap-2 xl:pt-1",
+            "@max-[220px]:flex-wrap @max-[220px]:items-center @max-[220px]:gap-2 @max-[220px]:pt-1"
+          )}
+        >
           {selectionType === "single" ? (
-            <button
-              type="button"
-              className={`${styles.selectBtn} ${isSelected ? styles.selectBtnActive : ""}`}
-              onClick={() => onToggleSingle(product, effectiveVariantId)}
+            <Button
+              variant="ghost"
+              size="sm"
+              active={isSelected}
+              onClick={() => onSelectExclusive(product, step, effectiveVariantId)}
             >
               {isSelected ? "✓ Selected" : "Select plan"}
-            </button>
+            </Button>
           ) : (
             <QuantityStepper
               quantity={quantity}
               min={min}
               label={product.name}
-              disabled={Boolean(product.locked && quantity <= min)}
-              onDecrement={() => onDecrement(product, effectiveVariantId)}
-              onIncrement={() => onIncrement(product, effectiveVariantId)}
+              decrementDisabled={locked}
+              incrementDisabled={locked}
+              onDecrement={() => onQuantityChange(product, effectiveVariantId, -1)}
+              onIncrement={() => onQuantityChange(product, effectiveVariantId, 1)}
             />
           )}
 
-          <div className={styles.pricing}>
-            {product.originalPrice != null && product.originalPrice > product.price && (
-              <span className={styles.priceStrike}>{formatCurrency(product.originalPrice)}</span>
-            )}
-            <span className={styles.price}>
-              {product.price === 0 ? "FREE" : formatCurrency(product.price)}
-              {product.billingSuffix ?? ""}
-            </span>
-          </div>
+          <Price
+            amountCents={dollarsToCents(product.price)}
+            compareAtCents={
+              product.originalPrice != null ? dollarsToCents(product.originalPrice) : undefined
+            }
+            suffix={product.billingSuffix ?? ""}
+            tone="card"
+          />
         </div>
       </div>
-    </div>
+    </article>
   );
 }
