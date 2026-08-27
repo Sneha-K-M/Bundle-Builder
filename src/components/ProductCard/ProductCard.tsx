@@ -99,7 +99,7 @@ export default function ProductCard({
       >
         <div
           className={cx(
-            "flex flex-col gap-2",
+            "flex min-w-0 flex-col gap-2",
             "md:max-xl:flex-1 md:max-xl:justify-center",
             "xl:flex-none xl:justify-start",
             "@max-[220px]:flex-none @max-[220px]:justify-start"

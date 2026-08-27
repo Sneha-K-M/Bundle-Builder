@@ -9,6 +9,12 @@ interface VariantSelectorProps {
   onSelect: (variantId: string) => void;
 }
 
+const SWATCH_CLASS: Record<string, string> = {
+  "#f5f5f0": "bg-[#f5f5f0]",
+  "#8a8a86": "bg-[#8a8a86]",
+  "#232323": "bg-[#232323]",
+};
+
 export default function VariantSelector({
   imageKey,
   variants,
@@ -18,11 +24,12 @@ export default function VariantSelector({
   if (!variants.length) return null;
 
   return (
-    <div className="flex flex-wrap gap-[3px]" role="radiogroup" aria-label="Color">
+    <div className="flex flex-nowrap items-center gap-[3px]" role="radiogroup" aria-label="Color">
       {variants.map((variant) => {
         const active = variant.id === activeVariantId;
         const artUrl = variantArtUrl(imageKey, variant.id);
         const label = variant.label ?? variant.id;
+        const swatchClass = variant.swatch ? SWATCH_CLASS[variant.swatch] : undefined;
         return (
           <button
             key={variant.id}
@@ -31,7 +38,7 @@ export default function VariantSelector({
             aria-checked={active}
             aria-label={label}
             className={cx(
-              "inline-flex h-[26px] flex-[0_1_65px] items-center justify-center gap-[3px] rounded-[2px] border-[0.5px] px-[3px] py-px text-[10px] font-normal tracking-[0.6px] leading-none transition-colors",
+              "box-border inline-flex h-[26px] w-[65px] shrink-0 items-center justify-center gap-[3px] overflow-hidden rounded-[2px] border-[0.5px] py-px pr-[3px] pl-[3px] text-[10px] font-normal tracking-[0.6px] leading-none opacity-100 transition-colors",
               active
                 ? "border-variant bg-variant-bg text-ink"
                 : "border-line-strong bg-white text-muted"
@@ -39,11 +46,17 @@ export default function VariantSelector({
             onClick={() => onSelect(variant.id)}
           >
             {artUrl ? (
-              <img src={artUrl} alt="" className="h-full w-auto shrink-0 rounded-[5px] object-contain aspect-square" />
+              <img
+                src={artUrl}
+                alt=""
+                className="h-full w-auto shrink-0 rounded-[5px] object-contain aspect-square"
+              />
             ) : (
               <span
-                className="h-4 w-4 shrink-0 rounded-full border border-black/12"
-                style={{ background: variant.swatch }}
+                className={cx(
+                  "h-4 w-4 shrink-0 rounded-full border border-black/12",
+                  swatchClass ?? "bg-muted"
+                )}
               />
             )}
             <span className="shrink-0 whitespace-nowrap">{variant.label}</span>
