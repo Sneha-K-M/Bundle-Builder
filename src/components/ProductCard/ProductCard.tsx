@@ -134,10 +134,14 @@ export default function ProductCard({
 
         <div
           className={cx(
-            "flex flex-wrap items-center justify-between gap-2 pt-1",
-            "md:max-xl:flex-nowrap md:max-xl:items-end md:max-xl:gap-3 md:max-xl:pt-2.5",
-            "xl:flex-wrap xl:items-center xl:gap-2 xl:pt-1",
-            "@max-[220px]:flex-wrap @max-[220px]:items-center @max-[220px]:gap-2 @max-[220px]:pt-1"
+            selectionType === "single"
+              ? "flex flex-col items-center gap-1.5 pt-2"
+              : cx(
+                  "flex flex-wrap items-center justify-between gap-2 pt-1",
+                  "md:max-xl:flex-nowrap md:max-xl:items-end md:max-xl:gap-3 md:max-xl:pt-2.5",
+                  "xl:flex-wrap xl:items-center xl:gap-2 xl:pt-1",
+                  "@max-[220px]:flex-wrap @max-[220px]:items-center @max-[220px]:gap-2 @max-[220px]:pt-1"
+                )
           )}
         >
           {selectionType === "single" ? (
@@ -168,6 +172,7 @@ export default function ProductCard({
             }
             suffix={product.billingSuffix ?? ""}
             tone="card"
+            align={selectionType === "single" ? "center" : "end"}
           />
         </div>
       </div>

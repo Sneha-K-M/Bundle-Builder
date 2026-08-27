@@ -168,19 +168,17 @@ export default function ReviewPanel({
             </p>
           )}
 
-          <Button
-            variant="primary"
-            fullWidth
-            className="mt-3.5 rounded-md"
-            onClick={onCheckout}
-            disabled={!canCheckout}
-          >
-            Checkout
-          </Button>
+          <div className="mt-3.5">
+            <Button variant="primary" fullWidth onClick={onCheckout} disabled={!canCheckout}>
+              Checkout
+            </Button>
+          </div>
 
-          <Button variant="link" className="mx-auto mt-3 block w-fit italic font-medium" onClick={onSave}>
-            {saveLabel}
-          </Button>
+          <div className="mt-3 flex justify-center">
+            <Button variant="link" onClick={onSave}>
+              {saveLabel}
+            </Button>
+          </div>
           {saveStatus === "restored" && (
             <p className="mt-1 mb-0 text-center text-[11.5px] text-success">
               Restored your saved system.

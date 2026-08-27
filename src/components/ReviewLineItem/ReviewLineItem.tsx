@@ -12,7 +12,7 @@ interface ReviewLineItemProps {
   onQuantityChange: QuantityChangeHandler;
 }
 
-export function reviewDisplayName(item: LineItem, showVariant: boolean): string {
+function reviewDisplayName(item: LineItem, showVariant: boolean): string {
   if (showVariant && item.variant.label) {
     return `${item.product.name} — ${item.variant.label}`;
   }

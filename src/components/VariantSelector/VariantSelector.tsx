@@ -1,6 +1,7 @@
 import type { ProductVariant } from "../../types/bundle";
 import { variantArtUrl } from "../../utils/assets";
 import { cx } from "../../utils/cx";
+import Button from "../ui/Button/Button";
 
 interface VariantSelectorProps {
   imageKey: string;
@@ -31,18 +32,13 @@ export default function VariantSelector({
         const label = variant.label ?? variant.id;
         const swatchClass = variant.swatch ? SWATCH_CLASS[variant.swatch] : undefined;
         return (
-          <button
+          <Button
             key={variant.id}
-            type="button"
+            variant="chip"
+            active={active}
             role="radio"
             aria-checked={active}
             aria-label={label}
-            className={cx(
-              "box-border inline-flex h-[26px] w-[65px] shrink-0 items-center justify-center gap-[3px] overflow-hidden rounded-[2px] border-[0.5px] py-px pr-[3px] pl-[3px] text-[10px] font-normal tracking-[0.6px] leading-none opacity-100 transition-colors",
-              active
-                ? "border-variant bg-variant-bg text-ink"
-                : "border-line-strong bg-white text-muted"
-            )}
             onClick={() => onSelect(variant.id)}
           >
             {artUrl ? (
@@ -60,7 +56,7 @@ export default function VariantSelector({
               />
             )}
             <span className="shrink-0 whitespace-nowrap">{variant.label}</span>
-          </button>
+          </Button>
         );
       })}
     </div>

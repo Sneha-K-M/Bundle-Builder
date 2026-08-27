@@ -25,18 +25,13 @@ export default function QuantityStepper({
   const atMin = quantity <= min;
   const groupLabel = label ? `Quantity of ${label}` : "Quantity";
   const compact = size === "sm";
-  const box = compact
-    ? "h-6 w-6 min-h-6 min-w-6 rounded-[4px] text-sm"
-    : "h-8 w-8 min-h-8 min-w-8 rounded-[5px] text-base";
 
   return (
     <div className="inline-flex items-center gap-[3px]" role="group" aria-label={groupLabel}>
       <IconButton
+        variant="stepper"
+        size={compact ? "sm" : "md"}
         label={`Decrease ${groupLabel.toLowerCase()}`}
-        className={cx(
-          "border border-line-strong bg-white leading-none text-muted hover:bg-stepper-hover hover:text-ink disabled:bg-stepper disabled:hover:bg-stepper disabled:hover:text-muted",
-          box
-        )}
         onClick={onDecrement}
         disabled={decrementDisabled || atMin}
       >
@@ -53,11 +48,9 @@ export default function QuantityStepper({
         {quantity}
       </span>
       <IconButton
+        variant="stepper"
+        size={compact ? "sm" : "md"}
         label={`Increase ${groupLabel.toLowerCase()}`}
-        className={cx(
-          "border border-line-strong bg-white leading-none text-muted hover:bg-stepper-hover hover:text-ink disabled:bg-stepper disabled:hover:bg-stepper disabled:hover:text-muted",
-          box
-        )}
         onClick={onIncrement}
         disabled={incrementDisabled}
       >
